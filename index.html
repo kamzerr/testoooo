@@ -1,30 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Hub de Prospection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 p-8 min-h-screen">
+    <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8 border border-slate-100">
+        <h1 class="text-3xl font-bold text-slate-800 mb-2">🎯 Hub de Prospection</h1>
+        <p class="text-slate-500 mb-8 pb-4 border-b border-slate-100">Sites vitrines générés automatiquement.</p>
+        
+        <ul id="liste-prospects" class="space-y-4">
+            <li class="text-slate-500 animate-pulse">Recherche des maquettes sur GitHub...</li>
+        </ul>
+    </div>
 
-            <li class="p-4 bg-white border border-slate-200 rounded-lg flex justify-between items-center hover:shadow-md transition">
-                <span class="font-semibold text-slate-800">Nouveau Prospect <span class="text-slate-400 font-normal text-sm ml-2">Ville inconnue</span></span>
-                <a href="nouveau-prospect-ville-inconnue/index.html" target="_blank" class="bg-blue-50 text-blue-600 px-4 py-2 rounded font-medium hover:bg-blue-600 hover:text-white transition">Voir le site</a>
-            </li>
+    <script>
+        // Paramètres de votre dépôt
+        const owner = 'kamzerr';
+        const repo = 'testoooo'; 
 
-            <li class="p-4 bg-white border border-slate-200 rounded-lg flex justify-between items-center hover:shadow-md transition">
-                <span class="font-semibold text-slate-800">Nouveau Prospect <span class="text-slate-400 font-normal text-sm ml-2">Ville inconnue</span></span>
-                <a href="nouveau-prospect-ville-inconnue/index.html" target="_blank" class="bg-blue-50 text-blue-600 px-4 py-2 rounded font-medium hover:bg-blue-600 hover:text-white transition">Voir le site</a>
-            </li>
+        // Appel à l'API publique de GitHub pour lire l'arborescence
+        fetch(`https://api.github.com/repos/${owner}/${repo}/contents/`)
+            .then(response => response.json())
+            .then(data => {
+                const liste = document.getElementById('liste-prospects');
+                liste.innerHTML = ''; // On efface le message de chargement
 
-            <li class="p-4 bg-white border border-slate-200 rounded-lg flex justify-between items-center hover:shadow-md transition">
-                <span class="font-semibold text-slate-800">Nouveau Prospect <span class="text-slate-400 font-normal text-sm ml-2">Ville inconnue</span></span>
-                <a href="nouveau-prospect-ville-inconnue/index.html" target="_blank" class="bg-blue-50 text-blue-600 px-4 py-2 rounded font-medium hover:bg-blue-600 hover:text-white transition">Voir le site</a>
-            </li>
+                // On filtre pour ne garder que les dossiers (les sites prospects)
+                // Si vous avez d'autres dossiers à ignorer (ex: images, css), ajoutez-les ici
+                const dossiers = data.filter(item => item.type === 'dir' && item.name !== 'src');
 
-            <li class="p-4 bg-white border border-slate-200 rounded-lg flex justify-between items-center hover:shadow-md transition">
-                <span class="font-semibold text-slate-800">Nouveau Prospect <span class="text-slate-400 font-normal text-sm ml-2">Ville inconnue</span></span>
-                <a href="nouveau-prospect-ville-inconnue/index.html" target="_blank" class="bg-blue-50 text-blue-600 px-4 py-2 rounded font-medium hover:bg-blue-600 hover:text-white transition">Voir le site</a>
-            </li>
+                if (dossiers.length === 0) {
+                    liste.innerHTML = '<li class="text-slate-500">Aucune maquette générée pour le moment.</li>';
+                    return;
+                }
 
-            <li class="p-4 bg-white border border-slate-200 rounded-lg flex justify-between items-center hover:shadow-md transition">
-                <span class="font-semibold text-slate-800">Nouveau Prospect <span class="text-slate-400 font-normal text-sm ml-2">Ville inconnue</span></span>
-                <a href="nouveau-prospect-ville-inconnue/index.html" target="_blank" class="bg-blue-50 text-blue-600 px-4 py-2 rounded font-medium hover:bg-blue-600 hover:text-white transition">Voir le site</a>
-            </li>
+                dossiers.forEach(dossier => {
+                    // On nettoie le nom du dossier pour l'affichage (remplace les tirets par des espaces)
+                    const nomPropre = dossier.name.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
-            <li class="p-4 bg-white border border-slate-200 rounded-lg flex justify-between items-center hover:shadow-md transition">
-                <span class="font-semibold text-slate-800">Nouveau Prospect <span class="text-slate-400 font-normal text-sm ml-2">Ville inconnue</span></span>
-                <a href="nouveau-prospect-ville-inconnue/index.html" target="_blank" class="bg-blue-50 text-blue-600 px-4 py-2 rounded font-medium hover:bg-blue-600 hover:text-white transition">Voir le site</a>
-            </li>
+                    const li = document.createElement('li');
+                    li.className = 'p-4 bg-white border border-slate-200 rounded-lg flex justify-between items-center hover:shadow-md transition';
+                    li.innerHTML = `
+                        <span class="font-semibold text-slate-800">${nomPropre}</span>
+                        <a href="${dossier.name}/index.html" target="_blank" class="bg-blue-50 text-blue-600 px-4 py-2 rounded font-medium hover:bg-blue-600 hover:text-white transition">Voir le site</a>
+                    `;
+                    liste.appendChild(li);
+                });
+            })
+            .catch(error => {
+                document.getElementById('liste-prospects').innerHTML = '<li class="text-red-500 p-4 bg-red-50 rounded-lg">Erreur : Impossible de lire le dépôt GitHub.</li>';
+                console.error('Erreur API GitHub:', error);
+            });
+    </script>
+</body>
+</html>
