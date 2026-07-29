@@ -46,11 +46,12 @@
             width: 100%;
         }
 
-        section {
+                section {
             min-height: 100vh;
             display: flex;
             align-items: center;
             padding: 100px 10vw;
+            perspective: 1200px; /* NOUVEAU : Crée une profondeur de champ pour la section */
         }
 
         .hero { justify-content: flex-start; }
@@ -59,7 +60,7 @@
         .reviews { justify-content: flex-end; }
         .contact { justify-content: center; text-align: center; }
 
-        .glass-panel {
+          .glass-panel {
             background: var(--glass-bg);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
@@ -68,6 +69,8 @@
             border-radius: 4px;
             max-width: 600px;
             box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            transform-style: preserve-3d; /* NOUVEAU : Permet au panneau de pivoter dans l'espace */
+            will-change: transform; /* NOUVEAU : Optimise la fluidité de l'animation */
         }
 
         .kicker {
@@ -343,14 +346,48 @@
 
         tl.to(brickGroup.rotation, { y: 0.5, ease: "none" }, 0);
         tl.to(camera.position, { z: 32, ease: "none" }, 0);
+                // --- 5.BIS ANIMATION 3D DES TEXTES (GSAP) ---
+        // On récupère tous les panneaux de verre
+        const panels = gsap.utils.toArray('.glass-panel');
+
+        panels.forEach((panel, index) => {
+            // Alterne l'inclinaison de départ (gauche pour les pairs, droite pour les impairs)
+            let angleDepart = index % 2 === 0 ? 15 : -15;
+
+            gsap.from(panel, {
+                scrollTrigger: {
+                    trigger: panel.closest('section'), // L'animation démarre quand la section apparaît
+                    start: "top 80%",
+                    end: "center center",
+                    scrub: 1
+                },
+                z: -400, // Le texte commence loin dans l'écran (derrière le mur)
+                rotationY: angleDepart,
+                rotationX: 10,
+                opacity: 0,
+                ease: "power1.out"
+            });
+        });
+
 
         // --- 6. INTERACTIVITÉ ---
         let mouseX = 0; let mouseY = 0;
         const targetRotation = new THREE.Vector2();
 
-        document.addEventListener('mousemove', (event) => {
+                document.addEventListener('mousemove', (event) => {
             mouseX = (event.clientX / window.innerWidth) * 2 - 1;
             mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            // NOUVEAU : Inclinaison holographique du texte
+            // GSAP gère la fluidité (duration: 1) pour un effet de flottement
+            gsap.to('.glass-panel', {
+                rotationY: mouseX * 8,   // Le panneau pivote de 8 degrés max
+                rotationX: mouseY * 8,
+                x: mouseX * 15,          // Décalage physique sur la gauche/droite
+                y: -mouseY * 15,
+                duration: 1,
+                ease: "power2.out"
+            });
         });
 
         const clock = new THREE.Clock();
