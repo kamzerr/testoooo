@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Structure & Pierre | Maçonnerie</title>
+    
+    <!-- Importation des librairies 3D et Animation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #D38B5D; /* Couleur terre cuite / brique */
+            --bg-color: #0A0A0A;
+            --text-light: #F5F5F7;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body, html {
+            width: 100%; height: 100%;
+            background-color: var(--bg-color);
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden; /* Empêche le scroll, on garde une vue "Application" */
+            color: var(--text-light);
+        }
+
+        /* Le canvas WebGL qui contient la 3D prend tout l'écran en fond */
+        #webgl-canvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 1;
+            pointer-events: none; /* Laisse les clics passer au travers si besoin */
+        }
+
+        /* Couche Interface Utilisateur (UI) par-dessus la 3D */
+        .ui-layer {
+            position: relative;
+            z-index: 10;
+            width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 10vw;
+            background: linear-gradient(90deg, rgba(10,10,10,0.9) 0%, rgba(10,10,10,0.4) 40%, rgba(10,10,10,0) 100%);
+            pointer-events: none; /* Le conteneur ne bloque pas la souris pour la 3D */
+        }
+
+        .content {
+            max-width: 650px;
+            pointer-events: auto; /* Réactive le clic pour les boutons */
+        }
+
+        .kicker {
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: block;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(3rem, 6vw, 5.5rem);
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        p {
+            font-size: 1.15rem;
+            line-height: 1.7;
+            color: #A0A0A0;
+            margin-bottom: 2.5rem;
+            max-width: 500px;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .btn-group {
+            display: flex; gap: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 16px 36px;
+            font-size: 0.95rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em;
+            cursor: pointer; transition: all 0.3s ease;
+            text-decoration: none; border-radius: 2px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--bg-color);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-primary:hover {
+            background-color: transparent;
+            color: var(--primary);
+            box-shadow: 0 0 20px rgba(211, 139, 93, 0.3);
+        }
+
+        /* Loading Screen */
+        #loader {
+            position: fixed; inset: 0;
+            background: var(--bg-color); z-index: 100;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--primary); font-family: 'Cinzel', serif; font-size: 2rem;
+            letter-spacing: 0.2em; transition: opacity 1s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader">PRÉPARATION DU CHANTIER...</div>
+
+    <canvas id="webgl-canvas"></canvas>
+
+    <main class="ui-layer">
+        <div class="content">
+            <span class="kicker class-anim">Maçonnerie Générale</span>
+            <h1 class="class-anim">Bâtir pour<br>l'éternité.</h1>
+            <p class="class-anim">De la fondation aux finitions, nous façonnons des structures robustes et élégantes qui traversent le temps. L'exigence artisanale à l'état pur.</p>
+            <div class="btn-group class-anim">
+                <a href="#devis" class="btn btn-primary">Demander un devis</a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // --- 1. INITIALISATION DE LA SCÈNE 3D ---
+        const canvas = document.querySelector('#webgl-canvas');
+        const scene = new THREE.Scene();
+        // Brouillard pour fondre les bords de la 3D dans le noir
+        scene.fog = new THREE.FogExp2(0x0A0A0A, 0.03);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 0, 25);
+
+        const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        // --- 2. LUMIÈRES CINÉMATOGRAPHIQUES ---
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+        scene.add(ambientLight);
+
+        const pointLight = new THREE.PointLight(0xD38B5D, 2.5, 50); // Lumière chaude (brique)
+        pointLight.position.set(10, 10, 10);
+        scene.add(pointLight);
+
+        const blueLight = new THREE.PointLight(0x4A6B8C, 1.5, 50); // Contraste froid
+        blueLight.position.set(-10, -10, 5);
+        scene.add(blueLight);
+
+        // --- 3. CRÉATION DU MUR DE BRIQUES (GÉNÉRATION PROCÉDURALE) ---
+        const brickGroup = new THREE.Group();
+        scene.add(brickGroup);
+
+        // Dimensions d'une brique standard
+        const brickWidth = 2;
+        const brickHeight = 0.8;
+        const brickDepth = 1;
+        const mortarGap = 0.1;
+
+        const rows = 12;
+        const cols = 12;
+        const bricks = []; // Tableau pour stocker les briques et les animer
+
+        // Matériau réaliste (Légèrement rugueux)
+        const brickMaterial = new THREE.MeshStandardMaterial({ 
+            color: 0x8C4A32, 
+            roughness: 0.9, 
+            metalness: 0.1,
+            flatShading: true // Donne un style très légèrement facetté/brut
+        });
+
+        // Construction logique du mur
+        for (let row = 0; row < rows; row++) {
+            // Décalage une ligne sur deux (Appareillage classique de maçonnerie)
+            const offset = (row % 2 === 0) ? 0 : (brickWidth + mortarGap) / 2;
+            
+            for (let col = 0; col < cols; col++) {
+                const geometry = new THREE.BoxGeometry(brickWidth, brickHeight, brickDepth);
+                
+                // Varier très légèrement la géométrie pour que ce ne soit pas "trop parfait"
+                const scaleVariation = 1 + (Math.random() * 0.05 - 0.025);
+                geometry.scale(scaleVariation, scaleVariation, scaleVariation);
+
+                const brick = new THREE.Mesh(geometry, brickMaterial);
+
+                // Position finale cible (X, Y)
+                const targetX = (col * (brickWidth + mortarGap)) - ((cols * brickWidth) / 2) + offset;
+                const targetY = (row * (brickHeight + mortarGap)) - ((rows * brickHeight) / 2);
+                const targetZ = Math.random() * 0.2; // Légère irrégularité dans l'alignement
+
+                // On stocke la position cible dans les données de l'objet
+                brick.userData = { targetX, targetY, targetZ };
+
+                // Position de départ (Très haut, éparpillées, invisibles)
+                brick.position.set(
+                    targetX + (Math.random() - 0.5) * 20, 
+                    targetY + 30 + Math.random() * 20, 
+                    targetZ + (Math.random() - 0.5) * 10
+                );
+                
+                // Rotation de départ chaotique
+                brick.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+                brick.scale.set(0,0,0);
+
+                brickGroup.add(brick);
+                bricks.push(brick);
+            }
+        }
+
+        // On décale le mur entier vers la droite pour laisser la place au texte (Layout)
+        brickGroup.position.x = 6;
+        brickGroup.rotation.y = -0.3; // Vue légèrement isométrique
+
+        // --- 4. ANIMATION DE CONSTRUCTION (GSAP) ---
+        function startAnimations() {
+            // Fait disparaître le loader
+            const loader = document.getElementById('loader');
+            loader.style.opacity = '0';
+            setTimeout(() => loader.remove(), 1000);
+
+            // Animation des briques qui tombent et se rangent parfaitement
+            gsap.to(bricks.map(b => b.position), {
+                x: (i) => bricks[i].userData.targetX,
+                y: (i) => bricks[i].userData.targetY,
+                z: (i) => bricks[i].userData.targetZ,
+                duration: 2.5,
+                stagger: { amount: 2, from: "random" }, // Ordre aléatoire de chute
+                ease: "expo.out"
+            });
+
+            gsap.to(bricks.map(b => b.rotation), {
+                x: 0, y: 0, z: 0,
+                duration: 2.5,
+                stagger: { amount: 2, from: "random" },
+                ease: "expo.out"
+            });
+
+            gsap.to(bricks.map(b => b.scale), {
+                x: 1, y: 1, z: 1,
+                duration: 1.5,
+                stagger: { amount: 2, from: "random" },
+                ease: "back.out(1.2)"
+            });
+
+            // Animation de l'interface (Texte HTML)
+            gsap.to('.class-anim', {
+                y: 0,
+                opacity: 1,
+                duration: 1.2,
+                stagger: 0.2,
+                ease: "power3.out",
+                delay: 1.5 // Le texte apparaît pendant que le mur finit de se construire
+            });
+        }
+
+        // --- 5. INTERACTIVITÉ (PARALLAX SOURIS) ---
+        let mouseX = 0;
+        let mouseY = 0;
+        const targetRotation = new THREE.Vector2();
+
+        document.addEventListener('mousemove', (event) => {
+            // Normaliser les coordonnées de la souris entre -1 et 1
+            mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+        });
+
+        // --- 6. BOUCLE DE RENDU 3D ---
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const time = clock.getElapsedTime();
+
+            // Effet de lévitation subtil du mur complet
+            brickGroup.position.y = Math.sin(time * 0.5) * 0.3;
+
+            // La lumière chaude tourne légèrement autour de la structure
+            pointLight.position.x = Math.sin(time * 0.3) * 15;
+            pointLight.position.z = Math.cos(time * 0.3) * 15;
+
+            // Rotation douce du mur basée sur la position de la souris (Lerp pour la fluidité)
+            targetRotation.x = mouseX * 0.2;
+            targetRotation.y = mouseY * 0.1;
+            
+            brickGroup.rotation.y += (targetRotation.x - brickGroup.rotation.y - 0.3) * 0.02; // -0.3 est l'angle isométrique de base
+            brickGroup.rotation.x += (-targetRotation.y - brickGroup.rotation.x) * 0.02;
+
+            renderer.render(scene, camera);
+        }
+
+        // --- 7. RESPONSIVE DESIGN ---
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            
+            // Ajustement de la position 3D sur mobile
+            if(window.innerWidth < 768) {
+                brickGroup.position.x = 0;
+                brickGroup.position.z = -10;
+            } else {
+                brickGroup.position.x = 6;
+                brickGroup.position.z = 0;
+            }
+        });
+
+        // Démarrage initial
+        setTimeout(startAnimations, 500); // Petite pause pour l'effet de suspense
+        animate();
+
+    </script>
+</body>
+</html>
