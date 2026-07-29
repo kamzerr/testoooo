@@ -3,30 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $json.nom_entreprise }} | Maçonnerie 3D</title>
+    <title>{{ $json.nom_entreprise }} | {{ $json.metier }} à {{ $json.ville }}</title>
+    <meta name="description" content="{{ $json.texte_hero }}">
     
-    <!-- Importation des librairies de base -->
+    <!-- Importation des librairies 3D et Animation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-
-    <!-- NOUVEAU : Importation pour le Post-Processing (Effets de caméra) -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
 
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
 
     <style>
         :root {
             --primary: #D38B5D; 
-            --bg-color: #020202; /* Assombri pour faire ressortir le Bloom */
+            --bg-color: #050505;
             --text-light: #F5F5F7;
-            --glass-bg: rgba(10, 10, 10, 0.4); /* Plus transparent pour voir la 3D */
-            --glass-border: rgba(255, 255, 255, 0.05);
+            --glass-bg: rgba(15, 15, 15, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.08);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -47,14 +40,18 @@
             pointer-events: none; 
         }
 
-        .content-wrapper { position: relative; z-index: 10; width: 100%; }
+        .content-wrapper {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+        }
 
-        section {
+                section {
             min-height: 100vh;
             display: flex;
             align-items: center;
             padding: 100px 10vw;
-            perspective: 1200px;
+            perspective: 1200px; /* NOUVEAU : Crée une profondeur de champ pour la section */
         }
 
         .hero { justify-content: flex-start; }
@@ -63,67 +60,81 @@
         .reviews { justify-content: flex-end; }
         .contact { justify-content: center; text-align: center; }
 
-        .glass-panel {
+          .glass-panel {
             background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--glass-border);
-            padding: 60px;
-            border-radius: 8px;
-            max-width: 650px;
-            box-shadow: 0 40px 80px rgba(0,0,0,0.8);
-            transform-style: preserve-3d;
-            will-change: transform;
-            position: relative;
-            overflow: hidden;
+            padding: 50px;
+            border-radius: 4px;
+            max-width: 600px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            transform-style: preserve-3d; /* NOUVEAU : Permet au panneau de pivoter dans l'espace */
+            will-change: transform; /* NOUVEAU : Optimise la fluidité de l'animation */
         }
 
-        /* Effet de brillance subtil sur les panneaux */
-        .glass-panel::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 50%; height: 100%;
-            background: linear-gradient(to right, transparent, rgba(255,255,255,0.03), transparent);
-            transform: skewX(-20deg);
-            animation: shine 8s infinite;
+        .kicker {
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: block;
         }
 
-        @keyframes shine {
-            0% { left: -100%; }
-            20% { left: 200%; }
-            100% { left: 200%; }
+        h1, h2 {
+            font-family: 'Cinzel', serif;
+            line-height: 1.15;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
         }
 
-        .kicker { color: var(--primary); text-transform: uppercase; letter-spacing: 0.3em; font-size: 0.75rem; font-weight: 600; margin-bottom: 1.5rem; display: block; }
-        h1, h2 { font-family: 'Cinzel', serif; line-height: 1.1; margin-bottom: 1.5rem; font-weight: 700; text-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-        h1 { font-size: clamp(3rem, 6vw, 5rem); }
-        h2 { font-size: clamp(2.2rem, 4.5vw, 3.5rem); }
-        p { font-size: 1.05rem; line-height: 1.8; color: #9a9a9a; margin-bottom: 2rem; }
+        h1 { font-size: clamp(2.5rem, 5vw, 4rem); }
+        h2 { font-size: clamp(2rem, 4vw, 3rem); }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #C0C0C0;
+            margin-bottom: 2rem;
+        }
 
         .btn {
             display: inline-flex; align-items: center; justify-content: center;
-            padding: 18px 42px; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em;
-            cursor: pointer; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            text-decoration: none; border-radius: 4px;
-            position: relative; overflow: hidden;
+            padding: 16px 36px;
+            font-size: 0.95rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em;
+            cursor: pointer; transition: all 0.3s ease;
+            text-decoration: none; border-radius: 2px;
         }
 
         .btn-primary {
             background-color: var(--primary);
-            color: #000;
-            box-shadow: 0 0 20px rgba(211, 139, 93, 0.2);
+            color: var(--bg-color);
+            border: 1px solid var(--primary);
         }
 
         .btn-primary:hover {
-            box-shadow: 0 0 40px rgba(211, 139, 93, 0.6);
-            transform: translateY(-2px);
-            background-color: #e59a68;
+            background-color: transparent;
+            color: var(--primary);
+            box-shadow: 0 0 20px rgba(211, 139, 93, 0.3);
         }
+
+        .grid-list {
+            display: flex; flex-direction: column; gap: 24px;
+        }
+        .grid-item {
+            border-left: 3px solid var(--primary);
+            padding-left: 20px;
+        }
+        .grid-item h3 { font-size: 1.2rem; margin-bottom: 8px; color: #FFF; }
+        .grid-item p { font-size: 0.95rem; margin-bottom: 0; }
+        
+        .stars { color: var(--primary); margin-bottom: 10px; font-size: 1.2rem; }
 
         @media(max-width: 992px) {
             section { padding: 80px 24px; justify-content: center !important; }
-            .glass-panel { padding: 40px 24px; width: 100%; }
+            .glass-panel { padding: 32px; width: 100%; }
         }
     </style>
 </head>
@@ -134,213 +145,285 @@
     <main class="content-wrapper">
         <section class="hero">
             <div class="glass-panel">
-                <span class="kicker">Expertise & Précision</span>
-                <h1>L'Art de<br>Bâtir</h1>
-                <p>Découvrez notre savoir-faire en maçonnerie générale. Une fondation solide pour vos projets les plus ambitieux.</p>
+                <span class="kicker">{{ $json.metier }} à {{ $json.ville }}</span>
+                <h1>{{ $json.nom_entreprise }}</h1>
+                <p>{{ $json.texte_hero }}</p>
                 <a href="#contact" class="btn btn-primary">Demander un devis</a>
             </div>
         </section>
-        
-        <!-- Les autres sections restent identiques à ton code, je les masque ici pour la lisibilité -->
-        <section class="services"><div class="glass-panel"><h2>Nos Services</h2><p>Le mur se construit...</p></div></section>
-        <section class="about"><div class="glass-panel"><h2>Notre Histoire</h2><p>Le mur prend forme...</p></div></section>
-        <section class="contact"><div class="glass-panel"><h2>Prêt à bâtir ?</h2><p>Le mur est terminé.</p></div></section>
+
+        <section class="services" id="services">
+            <div class="glass-panel">
+                <span class="kicker">Nos expertises</span>
+                <h2>Un savoir-faire reconnu</h2>
+                <div class="grid-list">
+                    <div class="grid-item">
+                        <h3>{{ $json.service_1_titre }}</h3>
+                        <p>{{ $json.service_1_desc }}</p>
+                    </div>
+                    <div class="grid-item">
+                        <h3>{{ $json.service_2_titre }}</h3>
+                        <p>{{ $json.service_2_desc }}</p>
+                    </div>
+                    <div class="grid-item">
+                        <h3>{{ $json.service_3_titre }}</h3>
+                        <p>{{ $json.service_3_desc }}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="about">
+            <div class="glass-panel">
+                <span class="kicker">Notre histoire</span>
+                <h2>L'exigence artisanale</h2>
+                <p>{{ $json.texte_a_propos }}</p>
+            </div>
+        </section>
+
+        <section class="reviews">
+            <div class="glass-panel">
+                <span class="kicker">Témoignages</span>
+                <h2>Ils nous font confiance</h2>
+                <div class="grid-list">
+                    <div class="grid-item">
+                        <div class="stars">★★★★★</div>
+                        <p>"{{ $json.avis_1_texte }}"</p>
+                        <span class="kicker" style="margin-top:10px; font-size:0.75rem;">— {{ $json.avis_1_auteur }}</span>
+                    </div>
+                    <div class="grid-item">
+                        <div class="stars">★★★★★</div>
+                        <p>"{{ $json.avis_2_texte }}"</p>
+                        <span class="kicker" style="margin-top:10px; font-size:0.75rem;">— {{ $json.avis_2_auteur }}</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="contact" id="contact">
+            <div class="glass-panel" style="margin: 0 auto;">
+                <h2>Prêt à bâtir votre projet ?</h2>
+                <p>Intervention rapide à {{ $json.ville }} et ses environs.</p>
+                <a href="tel:{{ $json.telephone }}" class="btn btn-primary" style="margin-bottom: 24px;">Appeler le {{ $json.telephone }}</a>
+                <p style="font-size: 0.85rem; margin-bottom: 0;">© {{ $json.nom_entreprise }} — Tous droits réservés.</p>
+            </div>
+        </section>
     </main>
 
     <script>
-        // --- 1. INITIALISATION ---
+        // --- 1. INITIALISATION DE LA SCÈNE ---
         const canvas = document.querySelector('#webgl-canvas');
         const scene = new THREE.Scene();
-        
-        // Brouillard plus dense pour fondre les bords
-        scene.fog = new THREE.FogExp2(0x020202, 0.035);
+        scene.fog = new THREE.FogExp2(0x050505, 0.02);
 
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(0, 0, 35); // Caméra légèrement plus reculée au départ
+        camera.position.set(0, 0, 25);
 
-        const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false }); // Antialias false pour les performances du Post-Processing
+        const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.toneMapping = THREE.ACESFilmicToneMapping; // Rendu des couleurs cinématographique
-        renderer.toneMappingExposure = 1.2;
 
-        // --- 2. POST-PROCESSING (LE SECRET DU RENDU "PRO") ---
-        const renderScene = new THREE.RenderPass(scene, camera);
-        
-        // UnrealBloomPass crée cet effet de halo lumineux sur les parties éclairées
-        // Paramètres : résolution, intensité, rayon, seuil de luminosité
-        const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
-        bloomPass.threshold = 0.2;
-        bloomPass.strength = 1.2; // Puissance du halo
-        bloomPass.radius = 0.5;
-
-        const composer = new THREE.EffectComposer(renderer);
-        composer.addPass(renderScene);
-        composer.addPass(bloomPass);
-
-        // --- 3. LUMIÈRES DRAMATIQUES ---
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.2); // Très faible
+        // --- 2. LUMIÈRES ---
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
         scene.add(ambientLight);
 
-        // Spot chaud principal (imite une lampe de chantier ou un soleil rasant)
-        const spotLight = new THREE.SpotLight(0xffaa55, 500);
-        spotLight.position.set(15, 20, 20);
-        spotLight.angle = Math.PI / 4;
-        spotLight.penumbra = 0.8; // Bord doux
-        scene.add(spotLight);
+        // Lumière directionnelle pour marquer fortement le relief (Bump Map)
+        const dirLight = new THREE.DirectionalLight(0xffeedd, 1.5);
+        dirLight.position.set(10, 15, 10);
+        scene.add(dirLight);
 
-        // Lumière froide en opposition pour détacher les volumes
-        const coolLight = new THREE.PointLight(0x4A6B8C, 300, 100); 
-        coolLight.position.set(-20, -10, 15);
+        const coolLight = new THREE.PointLight(0x4A6B8C, 1.2, 60); 
+        coolLight.position.set(-15, -10, 10);
         scene.add(coolLight);
 
-        // --- 4. PARTICULES DE POUSSIÈRE (ATMOSPHÈRE) ---
-        const particlesGeometry = new THREE.BufferGeometry();
-        const particlesCount = 800; // Nombre de grains de poussière
-        const posArray = new Float32Array(particlesCount * 3);
-
-        for(let i = 0; i < particlesCount * 3; i++) {
-            // Répartition dans un cube autour de la scène
-            posArray[i] = (Math.random() - 0.5) * 80;
-        }
-
-        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-        const particlesMaterial = new THREE.PointsMaterial({
-            size: 0.05,
-            color: 0xd38b5d,
-            transparent: true,
-            opacity: 0.6,
-            blending: THREE.AdditiveBlending
-        });
-        
-        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
-        scene.add(particlesMesh);
-
-        // --- 5. MATÉRIAUX ET MUR (Optimisé) ---
+                // --- 3. CHARGEMENT DES TEXTURES PBR ---
         const textureLoader = new THREE.TextureLoader();
+        
+        // NOUVEAU LIEN : On pointe directement sur les serveurs de GitHub
         const texturePath = 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/textures/';
         
         const diffuseMap = textureLoader.load(texturePath + 'brick_diffuse.jpg');
         const bumpMap = textureLoader.load(texturePath + 'brick_bump.jpg');
         const roughnessMap = textureLoader.load(texturePath + 'brick_roughness.jpg');
 
-        const brickMaterial = new THREE.MeshStandardMaterial({ 
-            color: 0xaa5533,
-            map: diffuseMap,
-            bumpMap: bumpMap,
-            bumpScale: 0.08, // Relief accentué
-            roughnessMap: roughnessMap,
-            roughness: 0.8,
+        // Ajustement du mapping
+        [diffuseMap, bumpMap, roughnessMap].forEach(tex => {
+            tex.wrapS = THREE.RepeatWrapping;
+            tex.wrapT = THREE.RepeatWrapping;
+            tex.repeat.set(1, 0.5); 
         });
 
+        // Application du matériau texturé
+        const brickMaterial = new THREE.MeshStandardMaterial({ 
+            color: 0x8C4A32, // SÉCURITÉ : Couleur brique affichée instantanément
+            map: diffuseMap,
+            bumpMap: bumpMap,
+            bumpScale: 0.04, // Intensité du relief
+            roughnessMap: roughnessMap,
+            roughness: 0.9,
+            metalness: 0.1
+        });
+
+
+        // --- 4. CRÉATION DU MUR ---
         const brickGroup = new THREE.Group();
         scene.add(brickGroup);
 
         const brickWidth = 2, brickHeight = 0.8, brickDepth = 1, mortarGap = 0.1;
-        const rows = 12, cols = 16;
+        const rows = 14, cols = 14;
         const bricks = [];
 
-        // Création du mur comme dans ton code, avec une dispersion initiale plus large
         for (let row = 0; row < rows; row++) {
             const offset = (row % 2 === 0) ? 0 : (brickWidth + mortarGap) / 2;
+            
             for (let col = 0; col < cols; col++) {
                 const geometry = new THREE.BoxGeometry(brickWidth, brickHeight, brickDepth);
+                const scaleVariation = 1 + (Math.random() * 0.05 - 0.025);
+                geometry.scale(scaleVariation, scaleVariation, scaleVariation);
+
                 const brick = new THREE.Mesh(geometry, brickMaterial);
 
                 const targetX = (col * (brickWidth + mortarGap)) - ((cols * brickWidth) / 2) + offset;
                 const targetY = (row * (brickHeight + mortarGap)) - ((rows * brickHeight) / 2);
-                const targetZ = (Math.random() * 0.4) - 0.2; 
+                const targetZ = (Math.random() * 0.3) - 0.15; 
 
                 brick.userData = { targetX, targetY, targetZ };
 
-                // Départ chaotique plus lointain
                 brick.position.set(
-                    targetX + (Math.random() - 0.5) * 80, 
-                    targetY - 30 - Math.random() * 50, 
-                    targetZ + (Math.random() - 0.5) * 80
+                    targetX + (Math.random() - 0.5) * 50, 
+                    targetY - 20 - Math.random() * 30, 
+                    targetZ + (Math.random() - 0.5) * 50
                 );
                 
-                brick.rotation.set(Math.random() * 5, Math.random() * 5, Math.random() * 5);
-                brick.scale.set(0.01, 0.01, 0.01); 
+                brick.rotation.set(Math.random() * Math.PI * 2, Math.random() * Math.PI * 2, Math.random() * Math.PI * 2);
+                brick.scale.set(0.1, 0.1, 0.1); 
 
                 brickGroup.add(brick);
                 bricks.push(brick);
             }
         }
 
-        // --- 6. ANIMATIONS GSAP ---
+        // --- 5. ANIMATION SCROLL (GSAP) ---
         gsap.registerPlugin(ScrollTrigger);
 
         bricks.sort((a, b) => a.userData.targetY - b.userData.targetY);
 
-        const tl = gsap.timeline({
+                const tl = gsap.timeline({
             scrollTrigger: {
                 trigger: "body",
                 start: "top top",
                 end: "bottom bottom",
-                scrub: 1.5, // Adoucit le scrub pour plus de fluidité
+                scrub: 1,
+                // L'événement onUpdate se déclenche à chaque pixel défilé
+                onUpdate: (self) => {
+                    // self.progress agit comme le "temps" de 0 à 1
+                    // La formule x = sin(progress * 2π) * 50 permet une boucle mathématique parfaite
+                    camera.position.x = Math.sin(self.progress * Math.PI * 2) * 50;
+                }
             }
         });
 
-        // Construction du mur
+
         tl.to(bricks.map(b => b.position), {
             x: (i) => bricks[i].userData.targetX,
             y: (i) => bricks[i].userData.targetY,
             z: (i) => bricks[i].userData.targetZ,
-            ease: "power2.inOut",
-            stagger: 0.015
+            ease: "power1.inOut",
+            stagger: 0.02 
         }, 0);
 
-        tl.to(bricks.map(b => b.rotation), { x: 0, y: 0, z: 0, ease: "power2.inOut", stagger: 0.015 }, 0);
-        tl.to(bricks.map(b => b.scale), { x: 1, y: 1, z: 1, ease: "power2.inOut", stagger: 0.015 }, 0);
+        tl.to(bricks.map(b => b.rotation), {
+            x: 0, y: 0, z: 0,
+            ease: "power1.inOut",
+            stagger: 0.02
+        }, 0);
 
-        // Mouvement cinématique de la caméra : elle s'approche puis recule légèrement
-        tl.to(camera.position, { z: 15, ease: "power1.inOut" }, 0);
-        tl.to(camera.position, { z: 28, ease: "power1.inOut" }, 0.5);
+        tl.to(bricks.map(b => b.scale), {
+            x: 1, y: 1, z: 1,
+            ease: "power1.inOut",
+            stagger: 0.02
+        }, 0);
 
-        // UI Animation
-        gsap.utils.toArray('.glass-panel').forEach((panel, index) => {
+        tl.to(brickGroup.rotation, { y: 0.5, ease: "none" }, 0);
+        tl.to(camera.position, { z: 32, ease: "none" }, 0);
+                // --- 5.BIS ANIMATION 3D DES TEXTES (GSAP) ---
+        // On récupère tous les panneaux de verre
+        const panels = gsap.utils.toArray('.glass-panel');
+
+        panels.forEach((panel, index) => {
+            // Alterne l'inclinaison de départ (gauche pour les pairs, droite pour les impairs)
+            let angleDepart = index % 2 === 0 ? 15 : -15;
+
             gsap.from(panel, {
-                scrollTrigger: { trigger: panel.closest('section'), start: "top 75%", end: "center center", scrub: 1 },
-                z: -200, opacity: 0, rotationY: index % 2 === 0 ? 10 : -10, y: 50, ease: "power1.out"
+                scrollTrigger: {
+                    trigger: panel.closest('section'), // L'animation démarre quand la section apparaît
+                    start: "top 80%",
+                    end: "center center",
+                    scrub: 1
+                },
+                z: -400, // Le texte commence loin dans l'écran (derrière le mur)
+                rotationY: angleDepart,
+                rotationX: 10,
+                opacity: 0,
+                ease: "power1.out"
             });
         });
 
-        // --- 7. INTERACTIVITÉ & BOUCLE ---
+
+        // --- 6. INTERACTIVITÉ ---
         let mouseX = 0; let mouseY = 0;
-        document.addEventListener('mousemove', (event) => {
+        const targetRotation = new THREE.Vector2();
+
+                document.addEventListener('mousemove', (event) => {
             mouseX = (event.clientX / window.innerWidth) * 2 - 1;
             mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            // NOUVEAU : Inclinaison holographique du texte
+            // GSAP gère la fluidité (duration: 1) pour un effet de flottement
+            gsap.to('.glass-panel', {
+                rotationY: mouseX * 8,   // Le panneau pivote de 8 degrés max
+                rotationX: mouseY * 8,
+                x: mouseX * 15,          // Décalage physique sur la gauche/droite
+                y: -mouseY * 15,
+                duration: 1,
+                ease: "power2.out"
+            });
         });
 
         const clock = new THREE.Clock();
 
-        function animate() {
+                                function animate() {
             requestAnimationFrame(animate);
             const time = clock.getElapsedTime();
 
-            // Poussière flottante
-            particlesMesh.rotation.y = time * 0.05;
-            particlesMesh.position.y = Math.sin(time * 0.2) * 2;
+            // Lévitation subtile du mur
+            brickGroup.position.y = Math.sin(time * 0.5) * 0.4;
+            
+            // Les lumières bougent pour faire briller le relief de la brique
+            dirLight.position.x = Math.sin(time * 0.2) * 15;
+            dirLight.position.z = Math.cos(time * 0.2) * 15;
 
-            // Parallax subtil du mur
-            brickGroup.rotation.y += (mouseX * 0.1 - brickGroup.rotation.y) * 0.02;
-            brickGroup.rotation.x += (-mouseY * 0.1 - brickGroup.rotation.x) * 0.02;
+            // La caméra regarde le centre du mur en permanence pendant son long trajet
+            camera.lookAt(0, 0, 0); 
 
-            // Mouvement de la lumière pour donner de la vie au matériau
-            spotLight.position.x = Math.sin(time * 0.5) * 10 + 15;
+            // Parallax réactif à la souris
+            targetRotation.x = mouseX * 0.15;
+            targetRotation.y = mouseY * 0.1;
+            brickGroup.rotation.y += (targetRotation.x - brickGroup.rotation.y) * 0.02;
+            brickGroup.rotation.x += (-targetRotation.y - brickGroup.rotation.x) * 0.02;
 
-            // On utilise composer.render() au lieu de renderer.render() pour activer le Post-Processing
-            composer.render();
+            renderer.render(scene, camera);
         }
 
+
+        // --- 7. RESPONSIVE ---
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
-            composer.setSize(window.innerWidth, window.innerHeight);
         });
 
+        // Démarrage de la boucle
         animate();
     </script>
 </body>
