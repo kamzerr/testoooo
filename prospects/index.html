@@ -19,18 +19,24 @@
     <script>
         // Paramètres de votre dépôt
         const owner = 'kamzerr';
-        const repo = 'testoooo'; 
+        const repo = 'testoooo';
+        const folder = 'prospects'; // Le nom de votre nouveau dossier
 
-        // Appel à l'API publique de GitHub pour lire l'arborescence
-        fetch(`https://api.github.com/repos/${owner}/${repo}/contents/`)
+        // Appel à l'API publique de GitHub pour lire l'arborescence du sous-dossier
+        fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${folder}/`)
             .then(response => response.json())
             .then(data => {
                 const liste = document.getElementById('liste-prospects');
                 liste.innerHTML = ''; // On efface le message de chargement
 
-                // On filtre pour ne garder que les dossiers (les sites prospects)
-                // Si vous avez d'autres dossiers à ignorer (ex: images, css), ajoutez-les ici
-                const dossiers = data.filter(item => item.type === 'dir' && item.name !== 'src');
+                // Sécurité : Si le dossier "prospects" n'existe pas encore ou est vide
+                if (data.message && data.message.includes("Not Found")) {
+                    liste.innerHTML = '<li class="text-slate-500">Aucune maquette générée pour le moment (Dossier "prospects" vide).</li>';
+                    return;
+                }
+
+                // On filtre pour ne garder que les dossiers
+                const dossiers = data.filter(item => item.type === 'dir');
 
                 if (dossiers.length === 0) {
                     liste.innerHTML = '<li class="text-slate-500">Aucune maquette générée pour le moment.</li>';
@@ -43,9 +49,11 @@
 
                     const li = document.createElement('li');
                     li.className = 'p-4 bg-white border border-slate-200 rounded-lg flex justify-between items-center hover:shadow-md transition';
+                    
+                    // Remarquez l'ajout de ${folder}/ dans le href ci-dessous
                     li.innerHTML = `
                         <span class="font-semibold text-slate-800">${nomPropre}</span>
-                        <a href="${dossier.name}/index.html" target="_blank" class="bg-blue-50 text-blue-600 px-4 py-2 rounded font-medium hover:bg-blue-600 hover:text-white transition">Voir le site</a>
+                        <a href="${folder}/${dossier.name}/index.html" target="_blank" class="bg-blue-50 text-blue-600 px-4 py-2 rounded font-medium hover:bg-blue-600 hover:text-white transition">Voir le site</a>
                     `;
                     liste.appendChild(li);
                 });
