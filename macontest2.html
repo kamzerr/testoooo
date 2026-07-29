@@ -348,7 +348,7 @@
 
         const clock = new THREE.Clock();
 
-                function animate() {
+                        function animate() {
             requestAnimationFrame(animate);
             const time = clock.getElapsedTime();
 
@@ -359,7 +359,7 @@
             dirLight.position.x = Math.sin(time * 0.2) * 15;
             dirLight.position.z = Math.cos(time * 0.2) * 15;
 
-            // NOUVEAU : Effet Cinématique (Travelling de la caméra)
+            // Effet Cinématique (Travelling de la caméra)
             // La caméra oscille de gauche à droite (entre -6 et +6 sur l'axe X)
             camera.position.x = Math.sin(time * 0.15) * 6; 
             // On force la caméra à toujours fixer le centre du mur pendant son déplacement
@@ -374,6 +374,15 @@
             renderer.render(scene, camera);
         }
 
+        // --- 7. RESPONSIVE ---
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Démarrage de la boucle
+        animate();
     </script>
 </body>
 </html>
