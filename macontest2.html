@@ -18,7 +18,7 @@
             --primary: #D38B5D; 
             --bg-color: #050505;
             --text-light: #F5F5F7;
-            --glass-bg: rgba(15, 15, 15, 0.6);
+            --glass-bg: rgba(15, 15, 15, 0.7);
             --glass-border: rgba(255, 255, 255, 0.08);
         }
 
@@ -32,7 +32,6 @@
             scroll-behavior: smooth;
         }
 
-        /* Le canvas 3D reste fixe en arrière-plan */
         #webgl-canvas {
             position: fixed;
             top: 0; left: 0;
@@ -41,7 +40,6 @@
             pointer-events: none; 
         }
 
-        /* Conteneur du contenu (scrollable) */
         .content-wrapper {
             position: relative;
             z-index: 10;
@@ -61,16 +59,15 @@
         .reviews { justify-content: flex-end; }
         .contact { justify-content: center; text-align: center; }
 
-        /* Cartes en verre (Glassmorphism) pour détacher le texte de la 3D */
         .glass-panel {
             background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--glass-border);
             padding: 50px;
             border-radius: 4px;
             max-width: 600px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
         }
 
         .kicker {
@@ -96,7 +93,7 @@
         p {
             font-size: 1.1rem;
             line-height: 1.7;
-            color: #B0B0B0;
+            color: #C0C0C0;
             margin-bottom: 2rem;
         }
 
@@ -120,7 +117,6 @@
             box-shadow: 0 0 20px rgba(211, 139, 93, 0.3);
         }
 
-        /* Grille des services et avis */
         .grid-list {
             display: flex; flex-direction: column; gap: 24px;
         }
@@ -141,13 +137,9 @@
 </head>
 <body>
 
-    <!-- Fond 3D fixe -->
     <canvas id="webgl-canvas"></canvas>
 
-    <!-- Contenu défilant -->
     <main class="content-wrapper">
-        
-        <!-- Section 1 : Héro -->
         <section class="hero">
             <div class="glass-panel">
                 <span class="kicker">{{ $json.metier }} à {{ $json.ville }}</span>
@@ -157,7 +149,6 @@
             </div>
         </section>
 
-        <!-- Section 2 : Services -->
         <section class="services" id="services">
             <div class="glass-panel">
                 <span class="kicker">Nos expertises</span>
@@ -179,7 +170,6 @@
             </div>
         </section>
 
-        <!-- Section 3 : À Propos -->
         <section class="about">
             <div class="glass-panel">
                 <span class="kicker">Notre histoire</span>
@@ -188,7 +178,6 @@
             </div>
         </section>
 
-        <!-- Section 4 : Avis -->
         <section class="reviews">
             <div class="glass-panel">
                 <span class="kicker">Témoignages</span>
@@ -208,7 +197,6 @@
             </div>
         </section>
 
-        <!-- Section 5 : Contact -->
         <section class="contact" id="contact">
             <div class="glass-panel" style="margin: 0 auto;">
                 <h2>Prêt à bâtir votre projet ?</h2>
@@ -217,11 +205,10 @@
                 <p style="font-size: 0.85rem; margin-bottom: 0;">© {{ $json.nom_entreprise }} — Tous droits réservés.</p>
             </div>
         </section>
-
     </main>
 
     <script>
-        // --- 1. INITIALISATION DE LA SCÈNE 3D ---
+        // --- 1. INITIALISATION DE LA SCÈNE ---
         const canvas = document.querySelector('#webgl-canvas');
         const scene = new THREE.Scene();
         scene.fog = new THREE.FogExp2(0x050505, 0.02);
@@ -234,18 +221,44 @@
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
         // --- 2. LUMIÈRES ---
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
         scene.add(ambientLight);
 
-        const warmLight = new THREE.PointLight(0xD38B5D, 2.5, 60); 
-        warmLight.position.set(10, 10, 10);
-        scene.add(warmLight);
+        // Lumière directionnelle pour marquer fortement le relief (Bump Map)
+        const dirLight = new THREE.DirectionalLight(0xffeedd, 1.5);
+        dirLight.position.set(10, 15, 10);
+        scene.add(dirLight);
 
-        const coolLight = new THREE.PointLight(0x4A6B8C, 1.5, 60); 
+        const coolLight = new THREE.PointLight(0x4A6B8C, 1.2, 60); 
         coolLight.position.set(-15, -10, 10);
         scene.add(coolLight);
 
-        // --- 3. CRÉATION DU MUR DE BRIQUES ---
+        // --- 3. CHARGEMENT DES TEXTURES PBR ---
+        const textureLoader = new THREE.TextureLoader();
+        const texturePath = 'https://unpkg.com/three@0.128.0/examples/textures/';
+        
+        const diffuseMap = textureLoader.load(texturePath + 'brick_diffuse.jpg');
+        const bumpMap = textureLoader.load(texturePath + 'brick_bump.jpg');
+        const roughnessMap = textureLoader.load(texturePath + 'brick_roughness.jpg');
+
+        // Ajustement du mapping pour que la texture s'adapte bien aux dimensions de nos briques
+        [diffuseMap, bumpMap, roughnessMap].forEach(tex => {
+            tex.wrapS = THREE.RepeatWrapping;
+            tex.wrapT = THREE.RepeatWrapping;
+            tex.repeat.set(1, 0.5); // Évite que l'image ne soit trop étirée
+        });
+
+        // Application du matériau texturé
+        const brickMaterial = new THREE.MeshStandardMaterial({ 
+            map: diffuseMap,
+            bumpMap: bumpMap,
+            bumpScale: 0.04, // Intensité du relief
+            roughnessMap: roughnessMap,
+            roughness: 0.9,
+            metalness: 0.1
+        });
+
+        // --- 4. CRÉATION DU MUR ---
         const brickGroup = new THREE.Group();
         scene.add(brickGroup);
 
@@ -253,11 +266,6 @@
         const rows = 14, cols = 14;
         const bricks = [];
 
-        const brickMaterial = new THREE.MeshStandardMaterial({ 
-            color: 0x8C4A32, roughness: 0.9, metalness: 0.1, flatShading: true 
-        });
-
-        // Construction mathématique
         for (let row = 0; row < rows; row++) {
             const offset = (row % 2 === 0) ? 0 : (brickWidth + mortarGap) / 2;
             
@@ -268,14 +276,12 @@
 
                 const brick = new THREE.Mesh(geometry, brickMaterial);
 
-                // Cible finale (Le mur construit)
                 const targetX = (col * (brickWidth + mortarGap)) - ((cols * brickWidth) / 2) + offset;
                 const targetY = (row * (brickHeight + mortarGap)) - ((rows * brickHeight) / 2);
-                const targetZ = (Math.random() * 0.3) - 0.15; // Léger relief
+                const targetZ = (Math.random() * 0.3) - 0.15; 
 
                 brick.userData = { targetX, targetY, targetZ };
 
-                // Position de départ (Briques éparpillées façon "gravats" en bas et loin)
                 brick.position.set(
                     targetX + (Math.random() - 0.5) * 50, 
                     targetY - 20 - Math.random() * 30, 
@@ -283,36 +289,33 @@
                 );
                 
                 brick.rotation.set(Math.random() * Math.PI * 2, Math.random() * Math.PI * 2, Math.random() * Math.PI * 2);
-                brick.scale.set(0.1, 0.1, 0.1); // Toutes petites au début
+                brick.scale.set(0.1, 0.1, 0.1); 
 
                 brickGroup.add(brick);
                 bricks.push(brick);
             }
         }
 
-        // --- 4. ANIMATION LIÉE AU SCROLL (GSAP ScrollTrigger) ---
+        // --- 5. ANIMATION SCROLL (GSAP) ---
         gsap.registerPlugin(ScrollTrigger);
 
-        // Astuce : On trie les briques par leur hauteur (targetY) pour que le mur se construise du bas vers le haut !
         bricks.sort((a, b) => a.userData.targetY - b.userData.targetY);
 
-        // Création de la timeline synchronisée avec le défilement
         const tl = gsap.timeline({
             scrollTrigger: {
                 trigger: "body",
                 start: "top top",
                 end: "bottom bottom",
-                scrub: 1 // Le "1" adoucit l'animation pour qu'elle suive le scroll avec un léger retard fluide
+                scrub: 1 
             }
         });
 
-        // Animation de la position, de la rotation et de la taille
         tl.to(bricks.map(b => b.position), {
             x: (i) => bricks[i].userData.targetX,
             y: (i) => bricks[i].userData.targetY,
             z: (i) => bricks[i].userData.targetZ,
             ease: "power1.inOut",
-            stagger: 0.02 // Stagger permet de décaler l'arrivée de chaque brique
+            stagger: 0.02 
         }, 0);
 
         tl.to(bricks.map(b => b.rotation), {
@@ -327,12 +330,10 @@
             stagger: 0.02
         }, 0);
 
-        // Effet cinéma : La caméra recule et tourne très légèrement pendant qu'on scrolle
         tl.to(brickGroup.rotation, { y: 0.5, ease: "none" }, 0);
         tl.to(camera.position, { z: 32, ease: "none" }, 0);
 
-
-        // --- 5. INTERACTIVITÉ (SOURIS) ---
+        // --- 6. INTERACTIVITÉ ---
         let mouseX = 0; let mouseY = 0;
         const targetRotation = new THREE.Vector2();
 
@@ -347,14 +348,12 @@
             requestAnimationFrame(animate);
             const time = clock.getElapsedTime();
 
-            // Lévitation permanente pour donner vie à la scène
             brickGroup.position.y = Math.sin(time * 0.5) * 0.4;
             
-            // Les lumières tournent lentement
-            warmLight.position.x = Math.sin(time * 0.2) * 20;
-            warmLight.position.z = Math.cos(time * 0.2) * 20;
+            // Les lumières bougent subtilement pour faire briller le relief de la brique
+            dirLight.position.x = Math.sin(time * 0.2) * 15;
+            dirLight.position.z = Math.cos(time * 0.2) * 15;
 
-            // Parallax réactif à la souris
             targetRotation.x = mouseX * 0.15;
             targetRotation.y = mouseY * 0.1;
             brickGroup.rotation.y += (targetRotation.x - brickGroup.rotation.y) * 0.02;
@@ -363,7 +362,6 @@
             renderer.render(scene, camera);
         }
 
-        // --- 6. RESPONSIVE ---
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
