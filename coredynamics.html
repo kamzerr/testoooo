@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Core Dynamics — Le numérique et la stratégie pour ceux qui font vraiment le travail</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1C2B33;
+    --ink-soft:#33454F;
+    --paper:#F7F5F0;
+    --paper-dim:#EDEAE1;
+    --signal:#E8622C;
+    --signal-dark:#C74E1F;
+    --moss:#5C7A72;
+    --moss-dark:#425A54;
+    --line:#D8D2C2;
+    --white:#FFFFFF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{
+    font-family:'Zilla Slab',serif;
+    font-weight:600;
+    color:var(--ink);
+    line-height:1.08;
+    letter-spacing:-0.01em;
+  }
+  .mono{
+    font-family:'Roboto Mono',monospace;
+  }
+  a{color:inherit;text-decoration:none;}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 28px;}
+  img,svg{display:block;max-width:100%;}
+  :focus-visible{outline:3px solid var(--signal);outline-offset:3px;}
+
+  /* ---------- NAV ---------- */
+  .nav{
+    position:sticky;top:0;z-index:50;
+    background:rgba(247,245,240,0.92);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav .wrap{
+    display:flex;align-items:center;justify-content:space-between;
+    height:72px;
+  }
+  .brand{
+    display:flex;align-items:center;gap:10px;
+    font-family:'Zilla Slab',serif;font-weight:700;font-size:1.15rem;
+    letter-spacing:-0.01em;
+  }
+  .brand .mark{
+    width:34px;height:34px;background:var(--ink);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--signal);font-family:'Roboto Mono',monospace;font-weight:600;font-size:0.85rem;
+    transform:rotate(-2deg);
+  }
+  .nav-links{display:flex;gap:32px;align-items:center;}
+  .nav-links a{font-size:0.92rem;font-weight:500;color:var(--ink-soft);transition:color .15s;}
+  .nav-links a:hover{color:var(--signal-dark);}
+  .nav-cta{
+    background:var(--ink);color:var(--paper)!important;
+    padding:10px 20px;font-weight:600;font-size:0.88rem;
+    border:1px solid var(--ink);
+  }
+  .nav-cta:hover{background:var(--signal);border-color:var(--signal);}
+  .burger{display:none;background:none;border:none;cursor:pointer;padding:8px;}
+  .burger span{display:block;width:22px;height:2px;background:var(--ink);margin:5px 0;}
+
+  /* ---------- HERO ---------- */
+  .hero{padding:88px 0 64px;position:relative;overflow:hidden;}
+  .hero .wrap{display:grid;grid-template-columns:1.1fr 0.9fr;gap:56px;align-items:start;}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:'Roboto Mono',monospace;font-size:0.76rem;font-weight:500;
+    color:var(--moss-dark);background:rgba(92,122,114,0.1);
+    padding:6px 12px;margin-bottom:22px;
+    border:1px solid rgba(92,122,114,0.25);
+  }
+  .eyebrow .dot{width:6px;height:6px;background:var(--signal);border-radius:50%;}
+  .hero h1{font-size:clamp(2.3rem,4.2vw,3.4rem);margin-bottom:22px;}
+  .hero h1 em{font-style:normal;color:var(--signal-dark);}
+  .hero p.lead{font-size:1.15rem;color:var(--ink-soft);max-width:520px;margin-bottom:32px;}
+  .hero-ctas{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:36px;}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:15px 26px;font-weight:600;font-size:0.95rem;
+    border:1px solid transparent;cursor:pointer;transition:all .15s;
+  }
+  .btn-primary{background:var(--signal);color:var(--white);}
+  .btn-primary:hover{background:var(--signal-dark);transform:translateY(-1px);}
+  .btn-ghost{background:transparent;color:var(--ink);border-color:var(--ink);}
+  .btn-ghost:hover{background:var(--ink);color:var(--paper);}
+  .hero-trust{display:flex;gap:28px;flex-wrap:wrap;}
+  .hero-trust div{font-size:0.82rem;color:var(--ink-soft);}
+  .hero-trust strong{display:block;font-family:'Zilla Slab',serif;font-size:1.5rem;color:var(--ink);}
+
+  /* fiche de constat — signature element */
+  .constat{
+    background:var(--white);
+    border:1px solid var(--line);
+    box-shadow:6px 6px 0 var(--ink);
+    padding:0;
+    transform:rotate(0.6deg);
+  }
+  .constat-head{
+    background:var(--ink);color:var(--paper);
+    padding:14px 20px;
+    display:flex;justify-content:space-between;align-items:center;
+    font-family:'Roboto Mono',monospace;font-size:0.72rem;letter-spacing:0.04em;
+    text-transform:uppercase;
+  }
+  .constat-head span:last-child{color:var(--signal);}
+  .constat-body{padding:24px 20px;}
+  .constat-row{
+    display:flex;justify-content:space-between;gap:14px;
+    padding:13px 0;border-bottom:1px dashed var(--line);
+    font-size:0.92rem;
+  }
+  .constat-row:last-child{border-bottom:none;}
+  .constat-row .label{color:var(--ink-soft);}
+  .constat-row .val{font-family:'Roboto Mono',monospace;font-weight:600;font-size:0.86rem;text-align:right;}
+  .val.bad{color:var(--signal-dark);}
+  .val.ok{color:var(--moss-dark);}
+  .constat-foot{
+    padding:16px 20px;background:var(--paper-dim);
+    font-size:0.84rem;color:var(--ink-soft);font-style:italic;
+    border-top:1px solid var(--line);
+  }
+
+  /* ---------- SECTION SHELL ---------- */
+  section{padding:88px 0;}
+  .section-alt{background:var(--paper-dim);}
+  .kicker{
+    font-family:'Roboto Mono',monospace;font-size:0.76rem;font-weight:600;
+    color:var(--signal-dark);letter-spacing:0.06em;text-transform:uppercase;
+    margin-bottom:12px;display:block;
+  }
+  .section-head{max-width:640px;margin-bottom:52px;}
+  .section-head h2{font-size:clamp(1.8rem,3vw,2.5rem);margin-bottom:16px;}
+  .section-head p{color:var(--ink-soft);font-size:1.05rem;}
+
+  /* ---------- LE CONSTAT (pourquoi) ---------- */
+  .problem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+  .problem-card{background:var(--white);padding:32px 28px;}
+  .problem-card .num{font-family:'Roboto Mono',monospace;font-size:0.78rem;color:var(--moss-dark);margin-bottom:14px;display:block;}
+  .problem-card h3{font-size:1.15rem;margin-bottom:10px;}
+  .problem-card p{color:var(--ink-soft);font-size:0.95rem;}
+
+  /* ---------- OFFRE — 3 étages ---------- */
+  .offer-stack{display:flex;flex-direction:column;gap:0;border:1px solid var(--ink);}
+  .offer-tier{
+    display:grid;grid-template-columns:220px 1fr 260px;
+    gap:28px;padding:36px 32px;
+    background:var(--white);
+    border-bottom:1px solid var(--line);
+    align-items:center;
+  }
+  .offer-tier:last-child{border-bottom:none;}
+  .offer-tier.highlight{background:var(--ink);color:var(--paper);}
+  .offer-tier.highlight .tier-label,
+  .offer-tier.highlight h3,
+  .offer-tier.highlight p{color:var(--paper);}
+  .offer-tier.highlight .tier-num{color:var(--signal);}
+  .tier-label{display:flex;flex-direction:column;gap:6px;}
+  .tier-num{font-family:'Roboto Mono',monospace;font-size:0.78rem;color:var(--moss-dark);}
+  .tier-tag{
+    font-family:'Roboto Mono',monospace;font-size:0.7rem;
+    background:var(--moss);color:var(--white);
+    padding:3px 9px;width:fit-content;text-transform:uppercase;letter-spacing:0.04em;
+  }
+  .offer-tier.highlight .tier-tag{background:var(--signal);}
+  .offer-tier h3{font-size:1.35rem;margin-bottom:8px;}
+  .offer-tier p{color:var(--ink-soft);font-size:0.95rem;}
+  .tier-price{text-align:right;}
+  .tier-price .amount{font-family:'Zilla Slab',serif;font-size:1.5rem;font-weight:700;}
+  .tier-price .note{font-family:'Roboto Mono',monospace;font-size:0.72rem;color:var(--moss-dark);margin-top:4px;}
+  .offer-tier.highlight .tier-price .note{color:#B9CFC8;}
+
+  /* ---------- PROCESSUS ---------- */
+  .process{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative;}
+  .process::before{
+    content:"";position:absolute;top:26px;left:6%;right:6%;height:1px;
+    background:repeating-linear-gradient(to right,var(--line) 0 8px,transparent 8px 14px);
+    z-index:0;
+  }
+  .process-step{position:relative;z-index:1;padding:0 20px;}
+  .process-step .step-mark{
+    width:52px;height:52px;background:var(--paper);border:2px solid var(--ink);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Roboto Mono',monospace;font-weight:600;margin-bottom:18px;
+  }
+  .process-step h4{font-size:1.05rem;margin-bottom:8px;}
+  .process-step p{font-size:0.88rem;color:var(--ink-soft);}
+
+  /* ---------- PARCOURS / CRÉDIBILITÉ ---------- */
+  .cred{display:grid;grid-template-columns:0.85fr 1.15fr;gap:56px;align-items:center;}
+  .cred-visual{
+    background:var(--ink);color:var(--paper);padding:36px;
+    border:1px solid var(--ink);
+  }
+  .cred-line{
+    display:flex;justify-content:space-between;gap:16px;
+    padding:16px 0;border-bottom:1px solid rgba(247,245,240,0.15);
+    font-size:0.9rem;
+  }
+  .cred-line:last-child{border-bottom:none;}
+  .cred-line .yr{font-family:'Roboto Mono',monospace;color:var(--signal);font-size:0.82rem;white-space:nowrap;}
+  .cred-line .what{color:var(--paper);opacity:0.92;}
+  .cred-text h2{margin-bottom:20px;}
+  .cred-text p{color:var(--ink-soft);margin-bottom:16px;font-size:1.02rem;}
+  .cred-text p strong{color:var(--ink);}
+
+  /* ---------- TARIFS ---------- */
+  .pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--ink);}
+  .price-card{
+    background:var(--white);padding:32px 28px;
+    border-right:1px solid var(--line);
+    display:flex;flex-direction:column;
+  }
+  .price-card:last-child{border-right:none;}
+  .price-card.mid{background:var(--ink);color:var(--paper);}
+  .price-card.mid h3, .price-card.mid .desc{color:var(--paper);}
+  .price-card.mid .price-num{color:var(--signal);}
+  .price-card.mid .featlist li{color:#D9D4C6;border-color:rgba(247,245,240,0.15);}
+  .price-badge{
+    font-family:'Roboto Mono',monospace;font-size:0.68rem;text-transform:uppercase;
+    color:var(--moss-dark);letter-spacing:0.05em;margin-bottom:10px;
+  }
+  .price-card.mid .price-badge{color:var(--signal);}
+  .price-card h3{font-size:1.2rem;margin-bottom:10px;}
+  .price-card .desc{font-size:0.88rem;color:var(--ink-soft);margin-bottom:20px;min-height:40px;}
+  .price-num{font-family:'Zilla Slab',serif;font-size:2.1rem;font-weight:700;margin-bottom:4px;}
+  .price-sub{font-family:'Roboto Mono',monospace;font-size:0.74rem;color:var(--moss-dark);margin-bottom:24px;}
+  .price-card.mid .price-sub{color:#B9CFC8;}
+  .featlist{list-style:none;flex:1;margin-bottom:24px;}
+  .featlist li{
+    font-size:0.87rem;padding:9px 0;border-bottom:1px dashed var(--line);
+    display:flex;gap:8px;
+  }
+  .featlist li::before{content:"—";color:var(--signal-dark);flex-shrink:0;}
+  .price-card.mid .featlist li::before{color:var(--signal);}
+  .price-note{font-size:0.78rem;color:var(--moss-dark);text-align:center;margin-top:24px;font-family:'Roboto Mono',monospace;}
+
+  /* ---------- FAQ ---------- */
+  .faq-item{border-bottom:1px solid var(--line);padding:26px 0;}
+  .faq-item h4{font-size:1.05rem;margin-bottom:10px;display:flex;gap:12px;}
+  .faq-item h4 .q-mark{font-family:'Roboto Mono',monospace;color:var(--signal-dark);}
+  .faq-item p{color:var(--ink-soft);font-size:0.95rem;padding-left:28px;}
+
+  /* ---------- CTA FINAL ---------- */
+  .final-cta{
+    background:var(--ink);color:var(--paper);
+    padding:96px 0;text-align:center;
+  }
+  .final-cta h2{color:var(--paper);font-size:clamp(2rem,4vw,2.8rem);margin-bottom:20px;}
+  .final-cta p{color:#C9C3B3;max-width:520px;margin:0 auto 36px;font-size:1.08rem;}
+  .final-cta .btn-primary{padding:18px 34px;font-size:1.02rem;}
+
+  /* ---------- FOOTER ---------- */
+  footer{padding:48px 0 36px;border-top:1px solid var(--line);}
+  .foot-grid{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:24px;}
+  .foot-brand{font-family:'Zilla Slab',serif;font-weight:700;font-size:1.1rem;}
+  .foot-meta{font-size:0.82rem;color:var(--ink-soft);}
+  .foot-links{display:flex;gap:22px;font-size:0.85rem;color:var(--ink-soft);}
+
+  /* ---------- RESPONSIVE ---------- */
+  @media(max-width:900px){
+    .hero .wrap{grid-template-columns:1fr;}
+    .problem-grid{grid-template-columns:1fr;}
+    .offer-tier{grid-template-columns:1fr;text-align:left;gap:14px;}
+    .tier-price{text-align:left;}
+    .process{grid-template-columns:1fr 1fr;gap:32px 20px;}
+    .process::before{display:none;}
+    .cred{grid-template-columns:1fr;}
+    .pricing-grid{grid-template-columns:1fr;}
+    .price-card{border-right:none;border-bottom:1px solid var(--line);}
+    .nav-links{display:none;}
+    .burger{display:block;}
+  }
+  @media(max-width:560px){
+    .process{grid-template-columns:1fr;}
+    .hero-trust{gap:20px;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{transition:none!important;}
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap">
+    <a href="#top" class="brand"><span class="mark">CD</span>Core Dynamics</a>
+    <div class="nav-links">
+      <a href="#constat">Le constat</a>
+      <a href="#offre">L'offre</a>
+      <a href="#parcours">Qui je suis</a>
+      <a href="#tarifs">Tarifs</a>
+      <a href="#contact" class="nav-cta">Prendre RDV</a>
+    </div>
+    <button class="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow"><span class="dot"></span>Artisans, commerçants — France entière</span>
+      <h1>Vos clients vous trouvent sur Google.<br>Encore faut-il qu'il y ait <em>quelque chose à trouver</em>.</h1>
+      <p class="lead">Core Dynamics construit le site de votre entreprise et remet de l'ordre dans votre activité — par quelqu'un qui a dirigé des restaurants et des équipes, pas par une agence qui ne connaît que le web.</p>
+      <div class="hero-ctas">
+        <a href="#contact" class="btn btn-primary">Recevoir mon aperçu gratuit</a>
+        <a href="#offre" class="btn btn-ghost">Voir comment ça marche</a>
+      </div>
+      <div class="hero-trust">
+        <div><strong>Plusieurs activités</strong>lancées et exploitées</div>
+        <div><strong>72h</strong>pour un premier aperçu de votre site</div>
+        <div><strong>0€</strong>tant que vous n'avez rien vu</div>
+      </div>
+    </div>
+
+    <div class="constat">
+      <div class="constat-head">
+        <span>Fiche de constat</span>
+        <span>N° 0421-GC</span>
+      </div>
+      <div class="constat-body">
+        <div class="constat-row">
+          <span class="label">Avis Google</span>
+          <span class="val ok">47 avis · 4.6★</span>
+        </div>
+        <div class="constat-row">
+          <span class="label">Site internet</span>
+          <span class="val bad">Aucun</span>
+        </div>
+        <div class="constat-row">
+          <span class="label">Visible sur "artisan + ville"</span>
+          <span class="val bad">Non</span>
+        </div>
+        <div class="constat-row">
+          <span class="label">Devis en ligne possible</span>
+          <span class="val bad">Non</span>
+        </div>
+        <div class="constat-row">
+          <span class="label">Concurrent le plus proche</span>
+          <span class="val ok">Site actif</span>
+        </div>
+      </div>
+      <div class="constat-foot">« Vous avez la réputation. Il manque la vitrine. »</div>
+    </div>
+  </div>
+</header>
+
+<section id="constat">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">Le problème, concrètement</span>
+      <h2>Ce que ça coûte de ne pas avoir de site</h2>
+      <p>Pas de discours marketing. Voici ce qui se passe réellement, chaque semaine, pour un artisan sans présence en ligne.</p>
+    </div>
+    <div class="problem-grid">
+      <div class="problem-card">
+        <span class="num mono">01</span>
+        <h3>Le client compare avant d'appeler</h3>
+        <p>Il tape "plombier + votre ville", voit trois concurrents avec un site et vous avec juste une fiche Google. Il clique sur eux.</p>
+      </div>
+      <div class="problem-card">
+        <span class="num mono">02</span>
+        <h3>Vos avis ne servent à personne</h3>
+        <p>47 avis positifs, c'est un capital. Sans site pour les mettre en avant, ils restent invisibles pour qui ne connaît pas déjà votre nom.</p>
+      </div>
+      <div class="problem-card">
+        <span class="num mono">03</span>
+        <h3>Vous gérez tout au téléphone</h3>
+        <p>Demandes de devis, questions sur vos horaires, votre zone d'intervention — tout ça vous prend du temps que vous ne facturez pas.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-alt" id="offre">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">Comment on avance ensemble</span>
+      <h2>Une offre en trois temps, sans engagement forcé</h2>
+      <p>Vous voyez le travail avant de payer quoi que ce soit. Ensuite, on avance seulement si ça vous sert vraiment.</p>
+    </div>
+    <div class="offer-stack">
+      <div class="offer-tier">
+        <div class="tier-label">
+          <span class="tier-num mono">Étape 1</span>
+          <span class="tier-tag">Offert</span>
+        </div>
+        <div>
+          <h3>L'aperçu — une page qui vous présente</h3>
+          <p>Je construis une première page simple à partir de ce qui existe déjà sur vous (fiche Google, avis, activité). Vous la recevez, vous la regardez, vous décidez si ça vaut le coup d'aller plus loin.</p>
+        </div>
+        <div class="tier-price">
+          <div class="amount mono">0 €</div>
+          <div class="note">Sans obligation</div>
+        </div>
+      </div>
+
+      <div class="offer-tier highlight">
+        <div class="tier-label">
+          <span class="tier-num mono">Étape 2</span>
+          <span class="tier-tag">Le plus demandé</span>
+        </div>
+        <div>
+          <h3>Le site — trois pages qui travaillent pour vous</h3>
+          <p>Page d'accueil qui présente votre métier, page contact avec votre zone d'intervention, page devis pour recevoir des demandes directement. Livré, testé sur mobile, prêt à être partagé.</p>
+        </div>
+        <div class="tier-price">
+          <div class="amount mono">À partir de 490€</div>
+          <div class="note">Discuté ensemble en RDV</div>
+        </div>
+      </div>
+
+      <div class="offer-tier">
+        <div class="tier-label">
+          <span class="tier-num mono">Étape 3</span>
+          <span class="tier-tag">Pour aller plus loin</span>
+        </div>
+        <div>
+          <h3>L'accompagnement — votre activité, pas que votre site</h3>
+          <p>Un regard extérieur sur vos marges, votre organisation, votre façon de fixer vos prix ou de gérer votre équipe. L'expérience de quelqu'un qui a dirigé, pas d'un consultant théorique.</p>
+        </div>
+        <div class="tier-price">
+          <div class="amount mono">À partir de 350€ (Pack Stratégie Audit + 2h conseil)</div>
+          <div class="note">Après le site, si utile</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">La méthode</span>
+      <h2>Ce qui se passe concrètement, dans l'ordre</h2>
+    </div>
+    <div class="process">
+      <div class="process-step">
+        <div class="step-mark mono">1</div>
+        <h4>Je repère votre activité</h4>
+        <p>Métier, ville, avis existants — je regarde ce qui existe déjà avant de vous contacter.</p>
+      </div>
+      <div class="process-step">
+        <div class="step-mark mono">2</div>
+        <h4>Vous recevez un aperçu</h4>
+        <p>Une page construite pour vous, sous 72h, sans rien avoir demandé de plus qu'un accord de principe.</p>
+      </div>
+      <div class="process-step">
+        <div class="step-mark mono">3</div>
+        <h4>On en discute 20 minutes</h4>
+        <p>Par téléphone ou en direct. Vous me dites ce qui manque, ce qui vous ressemble ou pas.</p>
+      </div>
+      <div class="process-step">
+        <div class="step-mark mono">4</div>
+        <h4>Le site part en ligne</h4>
+        <p>Trois pages, votre nom de domaine, et une formation rapide pour que vous soyez autonome dessus.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-alt" id="parcours">
+  <div class="wrap cred">
+    <div class="cred-visual">
+      <div class="cred-line"><span class="yr mono">Éco</span><span class="what">Enseignant en économie — comprendre un business avant de le vendre</span></div>
+      <div class="cred-line"><span class="yr mono">Indus.</span><span class="what">Manager qualité industrielle — mise en place de démarches innovantes</span></div>
+      <div class="cred-line"><span class="yr mono">Restau.</span><span class="what">Ouverture et exploitation de 3 restaurants</span></div>
+      <div class="cred-line"><span class="yr mono">Aujourd'hui</span><span class="what">Core Dynamics — numérique et stratégie pour artisans et commerçants</span></div>
+    </div>
+    <div class="cred-text">
+      <span class="kicker">Pourquoi Core Dynamics existe</span>
+      <h2>Je ne suis pas développeur devenu commercial. Je suis patron devenu outil.</h2>
+      <p>J'ai <strong>ouvert et fait tourner plusieurs activités diverses : restaurants, entreprise de BTP, commerce de proximité</strong>. Je sais ce que c'est de devoir gérer les commandes, le personnel, la caisse et le service en même temps — et de ne pas avoir une heure à perdre sur un problème de site web.</p>
+      <p>Core Dynamics, c'est cette expérience mise au service des artisans et commerçants qui n'ont ni le temps ni l'envie de devenir spécialistes du web. Je m'occupe du site. Et si votre activité a besoin d'autre chose, on en parle aussi.</p>
+    </div>
+  </div>
+</section>
+
+<section id="tarifs">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">Tarifs</span>
+      <h2>Des prix clairs, adaptés à une activité de province</h2>
+      <p>Pas de forfait à rallonge. Vous savez ce que vous payez et pourquoi.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <span class="price-badge mono">Découverte</span>
+        <h3>L'aperçu</h3>
+        <p class="desc">Pour voir ce que ça donne, sans rien engager.</p>
+        <div class="price-num">Offert</div>
+        <div class="price-sub mono">Livré sous 72h</div>
+        <ul class="featlist">
+          <li>Une page basée sur votre activité existante</li>
+          <li>Vos avis Google mis en valeur</li>
+          <li>Lien à partager, sans obligation</li>
+        </ul>
+        <a href="#contact" class="btn btn-ghost">Je le veux</a>
+      </div>
+      <div class="price-card mid">
+        <span class="price-badge mono">Le plus choisi</span>
+        <h3>Le site 3 pages</h3>
+        <p class="desc">Accueil, contact, demande de devis. Votre outil de travail au quotidien.</p>
+        <div class="price-num">Sur devis</div>
+        <div class="price-sub mono">Réponse en RDV, sous 48h</div>
+        <ul class="featlist">
+          <li>Page d'accueil pensée pour votre métier</li>
+          <li>Page contact avec zone d'intervention</li>
+          <li>Formulaire de devis ou de collaboration</li>
+          <li>Nom de domaine et mise en ligne inclus</li>
+          <li>Hébergement et petites modifications, en option mensuelle</li>
+        </ul>
+        <a href="#contact" class="btn btn-primary">Demander mon devis</a>
+      </div>
+      <div class="price-card">
+        <span class="price-badge mono">Aller plus loin</span>
+        <h3>Accompagnement stratégie</h3>
+        <p class="desc">Un regard de patron sur votre organisation, vos marges, votre développement.</p>
+        <div class="price-num">Sur devis</div>
+        <div class="price-sub mono">Discuté selon vos besoins</div>
+        <ul class="featlist">
+          <li>Audit de l'organisation actuelle</li>
+          <li>Points réguliers, à la fréquence utile pour vous</li>
+          <li>Conseils issus d'une expérience de direction réelle</li>
+        </ul>
+        <a href="#contact" class="btn btn-ghost">En discuter</a>
+      </div>
+    </div>
+    <p class="price-note">Les montants du site et de l'accompagnement dépendent de votre métier et de vos besoins réels — ils se décident ensemble, pas sur un tarif générique en ligne.</p>
+  </div>
+</section>
+
+<section class="section-alt">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">Questions courantes</span>
+      <h2>Ce qu'on me demande le plus souvent</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <h4><span class="q-mark mono">Q.</span>Pourquoi l'aperçu est gratuit ?</h4>
+        <p>Parce que je préfère vous montrer plutôt que vous convaincre. Si l'aperçu ne vous parle pas, vous ne me devez rien et on en reste là.</p>
+      </div>
+      <div class="faq-item">
+        <h4><span class="q-mark mono">Q.</span>Je n'y connais rien en informatique, ça pose problème ?</h4>
+        <p>Non, c'est même la majorité de mes clients. Le site est pensé pour que vous puissiez le regarder, le comprendre et faire de petites modifications vous-même si vous le souhaitez.</p>
+      </div>
+      <div class="faq-item">
+        <h4><span class="q-mark mono">Q.</span>Combien de temps pour avoir mon site en ligne ?</h4>
+        <p>L'aperçu arrive sous 72h. Une fois le devis validé pour le site complet, comptez généralement une à deux semaines selon les allers-retours.</p>
+      </div>
+      <div class="faq-item">
+        <h4><span class="q-mark mono">Q.</span>L'accompagnement stratégie est-il obligatoire ?</h4>
+        <p>Jamais. C'est une option proposée uniquement si, une fois le site en place, vous sentez qu'il y a autre chose à améliorer dans votre activité.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="final-cta" id="contact">
+  <div class="wrap">
+    <h2>Voyons ce que donnerait votre site</h2>
+    <p>Un échange de 20 minutes, un aperçu gratuit sous 72h, et vous décidez ensuite. Rien n'est engagé avant que vous ayez vu le résultat.</p>
+    <a href="mailto:contact@core-dynamics.fr" class="btn btn-primary">Écrire à Core Dynamics</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-grid">
+    <div>
+      <div class="foot-brand">Core Dynamics</div>
+      <div class="foot-meta">Accompagnement numérique et stratégie d'entreprise — artisans et commerçants, France entière.</div>
+    </div>
+    <div class="foot-links">
+      <a href="mailto:contact@core-dynamics.fr">contact@core-dynamics.fr</a>
+      <a href="#offre">L'offre</a>
+      <a href="#tarifs">Tarifs</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
