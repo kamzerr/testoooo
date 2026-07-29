@@ -233,23 +233,26 @@
         coolLight.position.set(-15, -10, 10);
         scene.add(coolLight);
 
-        // --- 3. CHARGEMENT DES TEXTURES PBR ---
+                // --- 3. CHARGEMENT DES TEXTURES PBR ---
         const textureLoader = new THREE.TextureLoader();
-        const texturePath = 'https://unpkg.com/three@0.128.0/examples/textures/';
+        
+        // NOUVEAU LIEN : On pointe directement sur les serveurs de GitHub
+        const texturePath = 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/textures/';
         
         const diffuseMap = textureLoader.load(texturePath + 'brick_diffuse.jpg');
         const bumpMap = textureLoader.load(texturePath + 'brick_bump.jpg');
         const roughnessMap = textureLoader.load(texturePath + 'brick_roughness.jpg');
 
-        // Ajustement du mapping pour que la texture s'adapte bien aux dimensions de nos briques
+        // Ajustement du mapping
         [diffuseMap, bumpMap, roughnessMap].forEach(tex => {
             tex.wrapS = THREE.RepeatWrapping;
             tex.wrapT = THREE.RepeatWrapping;
-            tex.repeat.set(1, 0.5); // Évite que l'image ne soit trop étirée
+            tex.repeat.set(1, 0.5); 
         });
 
         // Application du matériau texturé
         const brickMaterial = new THREE.MeshStandardMaterial({ 
+            color: 0x8C4A32, // SÉCURITÉ : Couleur brique affichée instantanément
             map: diffuseMap,
             bumpMap: bumpMap,
             bumpScale: 0.04, // Intensité du relief
@@ -257,6 +260,7 @@
             roughness: 0.9,
             metalness: 0.1
         });
+
 
         // --- 4. CRÉATION DU MUR ---
         const brickGroup = new THREE.Group();
