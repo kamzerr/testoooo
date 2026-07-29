@@ -12,7 +12,7 @@
         <p class="text-slate-500 mb-8 pb-4 border-b border-slate-100">Sites vitrines générés automatiquement.</p>
         
         <ul id="liste-prospects" class="space-y-4">
-            <li class="text-slate-500 animate-pulse">Recherche des maquettes sur GitHub...</li>
+            <li class="text-slate-500 animate-pulse">Recherche des maquettes en profondeur sur GitHub...</li>
         </ul>
     </div>
 
@@ -20,46 +20,58 @@
         // Paramètres de votre dépôt
         const owner = 'kamzerr';
         const repo = 'testoooo';
-        const folder = 'prospects'; // Le nom de votre nouveau dossier
+        const branch = 'main'; // La branche principale de votre dépôt
 
-        // Appel à l'API publique de GitHub pour lire l'arborescence du sous-dossier
-        fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${folder}/`)
+        // Appel à l'API Git Trees avec recursive=1 pour scanner TOUS les sous-dossiers
+        fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`)
             .then(response => response.json())
             .then(data => {
                 const liste = document.getElementById('liste-prospects');
                 liste.innerHTML = ''; // On efface le message de chargement
 
-                // Sécurité : Si le dossier "prospects" n'existe pas encore ou est vide
-                if (data.message && data.message.includes("Not Found")) {
-                    liste.innerHTML = '<li class="text-slate-500">Aucune maquette générée pour le moment (Dossier "prospects" vide).</li>';
+                // Sécurité si le dépôt est vide ou l'API inaccessible
+                if (!data.tree) {
+                    liste.innerHTML = '<li class="text-slate-500">Erreur lors de la lecture du dépôt ou dépôt vide.</li>';
                     return;
                 }
 
-                // On filtre pour ne garder que les dossiers
-                const dossiers = data.filter(item => item.type === 'dir');
+                // On filtre pour trouver UNIQUEMENT les fichiers "index.html" situés dans "prospects/"
+                const fichiersIndex = data.tree.filter(item => 
+                    item.type === 'blob' && 
+                    item.path.startsWith('prospects/') && 
+                    item.path.endsWith('/index.html')
+                );
 
-                if (dossiers.length === 0) {
+                if (fichiersIndex.length === 0) {
                     liste.innerHTML = '<li class="text-slate-500">Aucune maquette générée pour le moment.</li>';
                     return;
                 }
 
-                dossiers.forEach(dossier => {
-                    // On nettoie le nom du dossier pour l'affichage (remplace les tirets par des espaces)
-                    const nomPropre = dossier.name.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                fichiersIndex.forEach(file => {
+                    // file.path ressemble à "prospects/dossier-prospect/v1/index.html"
+                    
+                    // 1. On retire le début "prospects/" et la fin "/index.html"
+                    let cheminRelatif = file.path.replace('prospects/', '').replace('/index.html', '');
+                    
+                    // 2. On formate : "dossier-prospect/v1" devient "Dossier Prospect • V1"
+                    let nomAffichage = cheminRelatif
+                        .replace(/\//g, ' • ') // Remplace les slashs par des puces
+                        .replace(/-/g, ' ')    // Remplace les tirets par des espaces
+                        .replace(/\b\w/g, l => l.toUpperCase()); // Met les premières lettres en majuscules
 
                     const li = document.createElement('li');
                     li.className = 'p-4 bg-white border border-slate-200 rounded-lg flex justify-between items-center hover:shadow-md transition';
                     
-                    // Remarquez l'ajout de ${folder}/ dans le href ci-dessous
+                    // On utilise file.path directement pour le lien car il contient déjà le chemin complet depuis la racine
                     li.innerHTML = `
-                        <span class="font-semibold text-slate-800">${nomPropre}</span>
-                        <a href="${folder}/${dossier.name}/index.html" target="_blank" class="bg-blue-50 text-blue-600 px-4 py-2 rounded font-medium hover:bg-blue-600 hover:text-white transition">Voir le site</a>
+                        <span class="font-semibold text-slate-800">${nomAffichage}</span>
+                        <a href="${file.path}" target="_blank" class="bg-blue-50 text-blue-600 px-4 py-2 rounded font-medium hover:bg-blue-600 hover:text-white transition">Voir le site</a>
                     `;
                     liste.appendChild(li);
                 });
             })
             .catch(error => {
-                document.getElementById('liste-prospects').innerHTML = '<li class="text-red-500 p-4 bg-red-50 rounded-lg">Erreur : Impossible de lire le dépôt GitHub.</li>';
+                document.getElementById('liste-prospects').innerHTML = '<li class="text-red-500 p-4 bg-red-50 rounded-lg">Erreur : Impossible de se connecter à GitHub.</li>';
                 console.error('Erreur API GitHub:', error);
             });
     </script>
