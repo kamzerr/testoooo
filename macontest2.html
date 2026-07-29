@@ -305,14 +305,21 @@
 
         bricks.sort((a, b) => a.userData.targetY - b.userData.targetY);
 
-        const tl = gsap.timeline({
+                const tl = gsap.timeline({
             scrollTrigger: {
                 trigger: "body",
                 start: "top top",
                 end: "bottom bottom",
-                scrub: 1 
+                scrub: 1,
+                // L'événement onUpdate se déclenche à chaque pixel défilé
+                onUpdate: (self) => {
+                    // self.progress agit comme le "temps" de 0 à 1
+                    // La formule x = sin(progress * 2π) * 50 permet une boucle mathématique parfaite
+                    camera.position.x = Math.sin(self.progress * Math.PI * 2) * 50;
+                }
             }
         });
+
 
         tl.to(bricks.map(b => b.position), {
             x: (i) => bricks[i].userData.targetX,
@@ -348,7 +355,7 @@
 
         const clock = new THREE.Clock();
 
-                        function animate() {
+                                function animate() {
             requestAnimationFrame(animate);
             const time = clock.getElapsedTime();
 
@@ -359,13 +366,10 @@
             dirLight.position.x = Math.sin(time * 0.2) * 15;
             dirLight.position.z = Math.cos(time * 0.2) * 15;
 
-            // Effet Cinématique (Travelling de la caméra)
-            // La caméra oscille de gauche à droite (entre -6 et +6 sur l'axe X)
-            camera.position.x = Math.sin(time * 0.50) * 50; 
-            // On force la caméra à toujours fixer le centre du mur pendant son déplacement
+            // La caméra regarde le centre du mur en permanence pendant son long trajet
             camera.lookAt(0, 0, 0); 
 
-            // Parallax réactif à la souris (qui continue de fonctionner)
+            // Parallax réactif à la souris
             targetRotation.x = mouseX * 0.15;
             targetRotation.y = mouseY * 0.1;
             brickGroup.rotation.y += (targetRotation.x - brickGroup.rotation.y) * 0.02;
@@ -373,6 +377,7 @@
 
             renderer.render(scene, camera);
         }
+
 
         // --- 7. RESPONSIVE ---
         window.addEventListener('resize', () => {
