@@ -8,50 +8,68 @@
 </head>
 <body class="bg-slate-50 p-8 min-h-screen">
     <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8 border border-slate-100">
-        <h1 class="text-3xl font-bold text-slate-800 mb-2">🎯 Hub de Prospection</h1>
-        <p class="text-slate-500 mb-8 pb-4 border-b border-slate-100">Sites vitrines générés automatiquement.</p>
+        <h1 class="text-3xl font-bold text-slate-800 mb-2">🎯 Hub Global de Prospection</h1>
+        <p class="text-slate-500 mb-8 pb-4 border-b border-slate-100">Recherche automatique de tous les sites générés.</p>
         
         <ul id="liste-prospects" class="space-y-4">
-            <li class="text-slate-500 animate-pulse">Recherche des maquettes sur GitHub...</li>
+            <li class="text-slate-500 animate-pulse">Scan complet du dépôt GitHub en cours...</li>
         </ul>
     </div>
 
     <script>
-        // Paramètres de votre dépôt
         const owner = 'kamzerr';
-        const repo = 'testoooo'; 
+        const repo = 'testoooo';
+        const branch = 'main'; // Si cela ne marche pas, essayez 'master'
 
-        // Appel à l'API publique de GitHub pour lire l'arborescence
-        fetch(`https://api.github.com/repos/${owner}/${repo}/contents/`)
-            .then(response => response.json())
+        // On utilise l'API Git Trees pour scanner l'intégralité du dépôt
+        fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`)
+            .then(response => {
+                if (!response.ok) throw new Error("Erreur réseau ou branche introuvable");
+                return response.json();
+            })
             .then(data => {
                 const liste = document.getElementById('liste-prospects');
-                liste.innerHTML = ''; // On efface le message de chargement
+                liste.innerHTML = ''; 
 
-                // On filtre pour ne garder que les dossiers (les sites prospects)
-                // Si vous avez d'autres dossiers à ignorer (ex: images, css), ajoutez-les ici
-                const dossiers = data.filter(item => item.type === 'dir' && item.name !== 'src');
-
-                if (dossiers.length === 0) {
-                    liste.innerHTML = '<li class="text-slate-500">Aucune maquette générée pour le moment.</li>';
+                if (!data.tree) {
+                    liste.innerHTML = '<li class="text-slate-500">Le dépôt semble vide ou inaccessible.</li>';
                     return;
                 }
 
-                dossiers.forEach(dossier => {
-                    // On nettoie le nom du dossier pour l'affichage (remplace les tirets par des espaces)
-                    const nomPropre = dossier.name.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                // Le filtre magique : on garde tout fichier finissant par .html (sauf le Hub)
+                const fichiersHTML = data.tree.filter(item => 
+                    item.type === 'blob' && 
+                    item.path.endsWith('.html') && 
+                    item.path !== 'index.html' 
+                );
+
+                if (fichiersHTML.length === 0) {
+                    liste.innerHTML = '<li class="text-slate-500">Aucune page HTML trouvée dans les sous-dossiers.</li>';
+                    return;
+                }
+
+                fichiersHTML.forEach(file => {
+                    // On nettoie le nom pour l'affichage (ex: "prospects/lyon/v1.html" devient "Prospects • Lyon • V1")
+                    let nomAffichage = file.path
+                        .replace('.html', '')
+                        .replace(/\/index/g, '') // Retire le mot index s'il y est
+                        .replace(/\//g, ' • ') 
+                        .replace(/-/g, ' ')    
+                        .replace(/\b\w/g, l => l.toUpperCase()); 
 
                     const li = document.createElement('li');
                     li.className = 'p-4 bg-white border border-slate-200 rounded-lg flex justify-between items-center hover:shadow-md transition';
+                    
+                    // Le "./" garantit que le lien part bien de la racine de votre Hub
                     li.innerHTML = `
-                        <span class="font-semibold text-slate-800">${nomPropre}</span>
-                        <a href="${dossier.name}/index.html" target="_blank" class="bg-blue-50 text-blue-600 px-4 py-2 rounded font-medium hover:bg-blue-600 hover:text-white transition">Voir le site</a>
+                        <span class="font-semibold text-slate-800">${nomAffichage}</span>
+                        <a href="./${file.path}" target="_blank" class="bg-blue-50 text-blue-600 px-4 py-2 rounded font-medium hover:bg-blue-600 hover:text-white transition">Voir le site</a>
                     `;
                     liste.appendChild(li);
                 });
             })
             .catch(error => {
-                document.getElementById('liste-prospects').innerHTML = '<li class="text-red-500 p-4 bg-red-50 rounded-lg">Erreur : Impossible de lire le dépôt GitHub.</li>';
+                document.getElementById('liste-prospects').innerHTML = '<li class="text-red-500 p-4 bg-red-50 rounded-lg">Erreur de connexion à GitHub. Vérifiez que la branche est bien "main".</li>';
                 console.error('Erreur API GitHub:', error);
             });
     </script>
