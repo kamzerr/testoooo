@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ $json.nom_entreprise }} | {{ $json.metier }} à {{ $json.ville }}</title>
+    <meta name="description" content="{{ $json.texte_hero }}">
+    
+    <!-- Importation de GSAP pour le contrôle vidéo au scroll -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #D38B5D; 
+            --bg-color: #050505;
+            --text-light: #F5F5F7;
+            --glass-bg: rgba(15, 15, 15, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body, html {
+            background-color: var(--bg-color);
+            font-family: 'Montserrat', sans-serif;
+            color: var(--text-light);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* 1. CONTENEUR VIDÉO FIXE */
+        .video-background {
+            position: fixed;
+            top: 0; 
+            left: 0;
+            width: 100vw; 
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none; /* Empêche la vidéo de bloquer les clics */
+        }
+
+        .video-background video {
+            width: 100%; 
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.8; /* Légère transparence pour la lisibilité du texte */
+        }
+
+        /* 2. CONTENEUR DE CONTENU DÉFILANT */
+        .content-wrapper {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+        }
+
+        section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 100px 10vw;
+            perspective: 1200px; /* Pour l'effet 3D des panneaux */
+        }
+
+        .hero { justify-content: flex-start; }
+        .services { justify-content: flex-end; }
+        .about { justify-content: flex-start; }
+        .reviews { justify-content: flex-end; }
+        .contact { justify-content: center; text-align: center; }
+
+        /* 3. DESIGN DES PANNEAUX EN VERRE */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            padding: 50px;
+            border-radius: 4px;
+            max-width: 600px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            transform-style: preserve-3d;
+            will-change: transform, opacity;
+        }
+
+        .kicker {
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        h1, h2 {
+            font-family: 'Cinzel', serif;
+            line-height: 1.15;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        h1 { font-size: clamp(2.5rem, 5vw, 4rem); }
+        h2 { font-size: clamp(2rem, 4vw, 3rem); }
+
+        p { font-size: 1.1rem; line-height: 1.7; color: #E0E0E0; margin-bottom: 2rem; }
+
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 16px 36px;
+            font-size: 0.95rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em;
+            cursor: pointer; transition: all 0.3s ease;
+            text-decoration: none; border-radius: 2px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary); color: var(--bg-color); border: 1px solid var(--primary);
+        }
+
+        .btn-primary:hover {
+            background-color: transparent; color: var(--primary); box-shadow: 0 0 20px rgba(211, 139, 93, 0.3);
+        }
+
+        .grid-list { display: flex; flex-direction: column; gap: 24px; }
+        .grid-item { border-left: 3px solid var(--primary); padding-left: 20px; }
+        .grid-item h3 { font-size: 1.2rem; margin-bottom: 8px; color: #FFF; }
+        .grid-item p { font-size: 0.95rem; margin-bottom: 0; }
+        .stars { color: var(--primary); margin-bottom: 10px; font-size: 1.2rem; }
+
+        @media(max-width: 992px) {
+            section { padding: 80px 24px; justify-content: center !important; }
+            .glass-panel { padding: 32px; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ARRIÈRE-PLAN VIDÉO -->
+    <div class="video-background">
+        <video id="bg-video" src="https://kamzerr.github.io/testoooo/src/house.mp4" muted playsinline preload="auto"></video>
+    </div>
+
+    <!-- CONTENU DU SITE -->
+    <main class="content-wrapper">
+        <section class="hero">
+            <div class="glass-panel">
+                <span class="kicker">{{ $json.metier }} à {{ $json.ville }}</span>
+                <h1>{{ $json.nom_entreprise }}</h1>
+                <p>{{ $json.texte_hero }}</p>
+                <a href="#contact" class="btn btn-primary">Demander un devis</a>
+            </div>
+        </section>
+
+        <section class="services" id="services">
+            <div class="glass-panel">
+                <span class="kicker">Nos expertises</span>
+                <h2>Un savoir-faire reconnu</h2>
+                <div class="grid-list">
+                    <div class="grid-item">
+                        <h3>{{ $json.service_1_titre }}</h3>
+                        <p>{{ $json.service_1_desc }}</p>
+                    </div>
+                    <div class="grid-item">
+                        <h3>{{ $json.service_2_titre }}</h3>
+                        <p>{{ $json.service_2_desc }}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="about">
+            <div class="glass-panel">
+                <span class="kicker">Notre histoire</span>
+                <h2>L'exigence artisanale</h2>
+                <p>{{ $json.texte_a_propos }}</p>
+            </div>
+        </section>
+
+        <section class="contact" id="contact">
+            <div class="glass-panel" style="margin: 0 auto;">
+                <h2>Prêt à bâtir votre projet ?</h2>
+                <p>Intervention rapide à {{ $json.ville }} et ses environs.</p>
+                <a href="tel:{{ $json.telephone }}" class="btn btn-primary" style="margin-bottom: 24px;">Appeler le {{ $json.telephone }}</a>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        // --- 1. CONTRÔLE DE LA VIDÉO AU SCROLL ---
+        const video = document.querySelector("#bg-video");
+
+        video.onloadedmetadata = function() {
+            gsap.to(video, {
+                currentTime: video.duration,
+                ease: "none", 
+                scrollTrigger: {
+                    trigger: ".content-wrapper", // La durée de l'animation correspond à la hauteur de toute la page
+                    start: "top top",
+                    end: "bottom bottom",
+                    scrub: 1 // Lisse le mouvement vidéo d'une seconde pour un rendu fluide
+                }
+            });
+        };
+
+        // --- 2. APPARITION 3D DES PANNEAUX DE VERRE ---
+        const panels = gsap.utils.toArray('.glass-panel');
+
+        panels.forEach((panel, index) => {
+            let angleDepart = index % 2 === 0 ? 15 : -15;
+
+            gsap.from(panel, {
+                scrollTrigger: {
+                    trigger: panel.closest('section'),
+                    start: "top 85%",
+                    end: "center center",
+                    scrub: 1
+                },
+                z: -200, 
+                rotationY: angleDepart,
+                opacity: 0,
+                ease: "power1.out"
+            });
+        });
+    </script>
+</body>
+</html>
