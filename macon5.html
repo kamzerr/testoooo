@@ -384,54 +384,145 @@
   safetyGlow.position.set(-3, 1.5, 4);
   scene.add(safetyGlow);
 
-  var amb = new THREE.AmbientLight(0x4A473E, 0.38);
+  var amb = new THREE.AmbientLight(0x4A473E, 0.5);
   scene.add(amb);
 
-  // Cheap procedural env map (gradient sky/ground) so the steel picks up a believable
-  // reflection without loading a full HDRI — this alone removes a lot of the "plastic" look.
-  var pmrem = new THREE.PMREMGenerator(renderer);
-  var envScene = new THREE.Scene();
-  var envGrad = new THREE.Mesh(
-    new THREE.SphereGeometry(50, 16, 16),
-    new THREE.MeshBasicMaterial({ color:0x2A2822, side:THREE.BackSide })
-  );
-  envScene.add(envGrad);
-  var envLight = new THREE.PointLight(0xffd9a8, 4, 60);
-  envLight.position.set(0, 20, 0);
-  envScene.add(envLight);
-  var envTex = pmrem.fromScene(envScene, 0.04).texture;
-  scene.environment = envTex;
-
-  // ============ TEXTURES — real PBR maps, not flat color ============
-  var texLoader = new THREE.TextureLoader();
-  var TX = 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/textures/';
-
-  function loadTiled(path, repeatX, repeatY, srgb){
-    var t = texLoader.load(path);
-    t.wrapS = t.wrapT = THREE.RepeatWrapping;
-    t.repeat.set(repeatX, repeatY);
-    if (srgb && THREE.sRGBEncoding) t.encoding = THREE.sRGBEncoding;
-    return t;
+  // ============ PROCEDURAL TEXTURES — generated in-canvas, zero external requests ============
+  // No CDN dependency means no possible 404s, and full control over grain/contrast.
+  function makeCanvasTexture(size, painter){
+    var c = document.createElement('canvas');
+    c.width = c.height = size;
+    var ctx = c.getContext('2d');
+    painter(ctx, size);
+    var tex = new THREE.CanvasTexture(c);
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    return tex;
   }
 
-  var concreteDiffuse  = loadTiled(TX + 'brick_diffuse.jpg', 8, 16, true);
-  var concreteBump     = loadTiled(TX + 'brick_bump.jpg', 8, 16, false);
-  var concreteRough    = loadTiled(TX + 'brick_roughness.jpg', 8, 16, false);
+  function paintConcrete(ctx, s){
+    ctx.fillStyle = '#8f897b';
+    ctx.fillRect(0,0,s,s);
+    // mottled base tone
+    for (var i=0;i<420;i++){
+      var r = 4 + Math.random()*26;
+      var x = Math.random()*s, y = Math.random()*s;
+      var v = 118 + Math.random()*40;
+      ctx.fillStyle = 'rgba('+v+','+(v-4)+','+(v-10)+','+(0.10+Math.random()*0.12)+')';
+      ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+    }
+    // fine speckle grain
+    for (var i=0;i<9000;i++){
+      var x = Math.random()*s, y = Math.random()*s;
+      var v = Math.random()*70;
+      ctx.fillStyle = Math.random()<0.5 ? 'rgba(0,0,0,'+(0.03+Math.random()*0.06)+')' : 'rgba(255,255,255,'+(0.02+Math.random()*0.05)+')';
+      ctx.fillRect(x,y,1+Math.random()*1.6,1+Math.random()*1.6);
+    }
+    // hairline cracks
+    ctx.strokeStyle = 'rgba(20,18,14,0.35)';
+    ctx.lineWidth = 1;
+    for (var c2=0;c2<5;c2++){
+      ctx.beginPath();
+      var sx = Math.random()*s, sy = Math.random()*s;
+      ctx.moveTo(sx,sy);
+      for (var k=0;k<6;k++){ sx += (Math.random()-0.5)*60; sy += (Math.random()-0.5)*60; ctx.lineTo(sx,sy); }
+      ctx.stroke();
+    }
+  }
 
-  var metalDiffuse = loadTiled(TX + 'roughness_map.jpg', 2, 6, true);
-  var metalBump    = loadTiled(TX + 'roughness_map.jpg', 2, 6, false);
+  function paintConcreteBump(ctx, s){
+    ctx.fillStyle = '#808080';
+    ctx.fillRect(0,0,s,s);
+    for (var i=0;i<14000;i++){
+      var x = Math.random()*s, y = Math.random()*s;
+      var v = 100 + Math.random()*110;
+      ctx.fillStyle = 'rgb('+v+','+v+','+v+')';
+      ctx.fillRect(x,y,1+Math.random()*2,1+Math.random()*2);
+    }
+  }
 
-  var cortenDiffuse = loadTiled(TX + 'brick_diffuse.jpg', 3, 9, true);
-  var cortenBump    = loadTiled(TX + 'brick_bump.jpg', 3, 9, false);
+  function paintMetal(ctx, s){
+    ctx.fillStyle = '#3a3934';
+    ctx.fillRect(0,0,s,s);
+    // brushed directional streaks
+    for (var i=0;i<900;i++){
+      var y = Math.random()*s;
+      var v = 40 + Math.random()*70;
+      ctx.strokeStyle = 'rgba('+v+','+v+','+(v+4)+','+(0.08+Math.random()*0.16)+')';
+      ctx.lineWidth = 0.6 + Math.random()*1.4;
+      ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(s, y + (Math.random()-0.5)*6); ctx.stroke();
+    }
+    // scattered mill scale specks
+    for (var i=0;i<600;i++){
+      var x = Math.random()*s, y = Math.random()*s;
+      ctx.fillStyle = 'rgba(10,10,8,'+(0.15+Math.random()*0.25)+')';
+      ctx.fillRect(x,y,1+Math.random()*3,1);
+    }
+  }
+
+  function paintMetalBump(ctx, s){
+    ctx.fillStyle = '#808080';
+    ctx.fillRect(0,0,s,s);
+    for (var i=0;i<700;i++){
+      var y = Math.random()*s;
+      var v = 90 + Math.random()*110;
+      ctx.strokeStyle = 'rgb('+v+','+v+','+v+')';
+      ctx.lineWidth = 0.5 + Math.random();
+      ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(s,y+(Math.random()-0.5)*4); ctx.stroke();
+    }
+  }
+
+  function paintCorten(ctx, s){
+    ctx.fillStyle = '#8a4126';
+    ctx.fillRect(0,0,s,s);
+    for (var i=0;i<520;i++){
+      var r = 3 + Math.random()*20;
+      var x = Math.random()*s, y = Math.random()*s;
+      var pick = Math.random();
+      var col = pick<0.5 ? '90,50,28' : (pick<0.8 ? '120,68,38' : '60,32,18');
+      ctx.fillStyle = 'rgba('+col+','+(0.15+Math.random()*0.25)+')';
+      ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+    }
+    for (var i=0;i<7000;i++){
+      var x = Math.random()*s, y = Math.random()*s;
+      ctx.fillStyle = Math.random()<0.5 ? 'rgba(30,15,8,'+(0.05+Math.random()*0.12)+')' : 'rgba(180,110,70,'+(0.03+Math.random()*0.08)+')';
+      ctx.fillRect(x,y,1+Math.random()*2,1+Math.random()*2);
+    }
+  }
+
+  function paintCortenBump(ctx, s){
+    ctx.fillStyle = '#808080';
+    ctx.fillRect(0,0,s,s);
+    for (var i=0;i<3200;i++){
+      var r = 1+Math.random()*4;
+      var x = Math.random()*s, y = Math.random()*s;
+      var v = 70 + Math.random()*140;
+      ctx.fillStyle = 'rgb('+v+','+v+','+v+')';
+      ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+    }
+  }
+
+  var concreteDiffuse = makeCanvasTexture(512, paintConcrete);
+  var concreteBump    = makeCanvasTexture(512, paintConcreteBump);
+  concreteDiffuse.repeat.set(10, 20);
+  concreteBump.repeat.set(10, 20);
+
+  var metalDiffuse = makeCanvasTexture(512, paintMetal);
+  var metalBump    = makeCanvasTexture(512, paintMetalBump);
+  metalDiffuse.repeat.set(1, 5);
+  metalBump.repeat.set(1, 5);
+
+  var cortenDiffuse = makeCanvasTexture(512, paintCorten);
+  var cortenBump    = makeCanvasTexture(512, paintCortenBump);
+  cortenDiffuse.repeat.set(2, 8);
+  cortenBump.repeat.set(2, 8);
 
   // ============ GROUND — bare concrete slab, endless, real surface grain ============
   var groundMat = new THREE.MeshStandardMaterial({
-    color:0x9A9488,
+    color:0xffffff,
     map: concreteDiffuse,
     bumpMap: concreteBump,
-    bumpScale: 0.045,
-    roughnessMap: concreteRough,
-    roughness: 1,
+    bumpScale: 0.05,
+    roughness: 0.97,
     metalness: 0.02
   });
   var ground = new THREE.Mesh(new THREE.PlaneGeometry(200, 400), groundMat);
@@ -453,29 +544,28 @@
   scene.add(structureGroup);
 
   var steelMat = new THREE.MeshStandardMaterial({
-    color:0x39362F,
+    color:0xffffff,
     map: metalDiffuse,
     bumpMap: metalBump,
-    bumpScale: 0.02,
-    roughness: 0.55,
-    metalness: 0.8
+    bumpScale: 0.025,
+    roughness: 0.5,
+    metalness: 0.7
   });
 
   var cortenMat = new THREE.MeshStandardMaterial({
-    color:0x9C4A28,
+    color:0xffffff,
     map: cortenDiffuse,
     bumpMap: cortenBump,
-    bumpScale: 0.05,
+    bumpScale: 0.055,
     roughness: 0.85,
-    metalness: 0.3
+    metalness: 0.25
   });
 
   var concreteMat = new THREE.MeshStandardMaterial({
-    color:0x958F81,
+    color:0xffffff,
     map: concreteDiffuse,
     bumpMap: concreteBump,
-    bumpScale: 0.06,
-    roughnessMap: concreteRough,
+    bumpScale: 0.07,
     roughness: 0.95,
     metalness: 0.05
   });
