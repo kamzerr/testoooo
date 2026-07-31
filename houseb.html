@@ -32,17 +32,19 @@
         }
 
         /* 1. TOILE DE FOND (SÉQUENCE D'IMAGES) */
-        #hero-lightpass {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 0;
-            object-fit: cover; /* Remplit l'écran sans déformer */
-            opacity: 0.8;
-            pointer-events: none; /* Laisse passer les clics vers le contenu */
-        }
+ #hero-lightpass {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    object-fit: cover; 
+    object-position: center bottom; /* Aligne le point de non-coupure en bas au centre */
+    opacity: 0.8;
+    pointer-events: none;
+}
+
 
         /* 2. CONTENEUR DE CONTENU DÉFILANT */
         .content-wrapper {
