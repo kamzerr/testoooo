@@ -6,7 +6,7 @@
     <title>{{ $json.nom_entreprise }} | {{ $json.metier }} à {{ $json.ville }}</title>
     <meta name="description" content="{{ $json.texte_hero }}">
     
-    <!-- Importation de GSAP pour le contrôle vidéo au scroll -->
+    <!-- Importation de GSAP pour les animations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
@@ -31,22 +31,17 @@
             scroll-behavior: smooth;
         }
 
-        /* 1. CONTENEUR VIDÉO FIXE */
-        .video-background {
+        /* 1. TOILE DE FOND (SÉQUENCE D'IMAGES) */
+        #hero-lightpass {
             position: fixed;
-            top: 0; 
+            top: 0;
             left: 0;
-            width: 100vw; 
+            width: 100vw;
             height: 100vh;
             z-index: 0;
-            pointer-events: none; /* Empêche la vidéo de bloquer les clics */
-        }
-
-        .video-background video {
-            width: 100%; 
-            height: 100%;
-            object-fit: cover;
-            opacity: 0.8; /* Légère transparence pour la lisibilité du texte */
+            object-fit: cover; /* Remplit l'écran sans déformer */
+            opacity: 0.8;
+            pointer-events: none; /* Laisse passer les clics vers le contenu */
         }
 
         /* 2. CONTENEUR DE CONTENU DÉFILANT */
@@ -61,7 +56,7 @@
             display: flex;
             align-items: center;
             padding: 100px 10vw;
-            perspective: 1200px; /* Pour l'effet 3D des panneaux */
+            perspective: 1200px; /* Profondeur 3D pour les panneaux */
         }
 
         .hero { justify-content: flex-start; }
@@ -126,7 +121,6 @@
         .grid-item { border-left: 3px solid var(--primary); padding-left: 20px; }
         .grid-item h3 { font-size: 1.2rem; margin-bottom: 8px; color: #FFF; }
         .grid-item p { font-size: 0.95rem; margin-bottom: 0; }
-        .stars { color: var(--primary); margin-bottom: 10px; font-size: 1.2rem; }
 
         @media(max-width: 992px) {
             section { padding: 80px 24px; justify-content: center !important; }
@@ -136,12 +130,10 @@
 </head>
 <body>
 
-    <!-- ARRIÈRE-PLAN VIDÉO -->
-    <div class="video-background">
-        <video id="bg-video" src="/src/houseb.mp4" muted playsinline preload="auto"></video>
-    </div>
+    <!-- ARRIÈRE-PLAN ANIMÉ PAR SÉQUENCE D'IMAGES -->
+    <canvas id="hero-lightpass"></canvas>
 
-    <!-- CONTENU DU SITE -->
+    <!-- CONTENU HTML SUPERPOSÉ -->
     <main class="content-wrapper">
         <section class="hero">
             <div class="glass-panel">
@@ -189,26 +181,60 @@
     <script>
         gsap.registerPlugin(ScrollTrigger);
 
-        // --- 1. CONTRÔLE DE LA VIDÉO AU SCROLL ---
-        const video = document.querySelector("#bg-video");
+        // --- 1. MOTEUR DE RENDU DES IMAGES AU SCROLL ---
+        const canvas = document.getElementById("hero-lightpass");
+        const context = canvas.getContext("2d");
 
-        video.onloadedmetadata = function() {
-            gsap.to(video, {
-                currentTime: video.duration,
-                ease: "none", 
-                scrollTrigger: {
-                    trigger: ".content-wrapper", // La durée de l'animation correspond à la hauteur de toute la page
-                    start: "top top",
-                    end: "bottom bottom",
-                    scrub: 1 // Lisse le mouvement vidéo d'une seconde pour un rendu fluide
-                }
-            });
+        // Résolution du canvas (Modifiez si vos images ont une taille différente)
+        canvas.width = 1920;
+        canvas.height = 1080;
+
+        // Nombre total d'images (de 005 à 300 = 296 images)
+        const frameCount = 296; 
+        
+        // Générateur d'URL pointant vers votre GitHub
+        const currentFrame = index => {
+            const numeroImage = index + 5; 
+            return `https://kamzerr.github.io/testoooo/src/house/ezgif-frame-${numeroImage.toString().padStart(3, '0')}.jpg`;
         };
 
-        // --- 2. APPARITION 3D DES PANNEAUX DE VERRE ---
+        // Cache pour précharger les images en mémoire vive
+        const images = [];
+        const house = { frame: 0 };
+
+        for (let i = 0; i < frameCount; i++) {
+            const img = new Image();
+            img.src = currentFrame(i);
+            images.push(img);
+        }
+
+        // Affichage de la toute première image au chargement
+        images[0].onload = render;
+
+        function render() {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.drawImage(images[house.frame], 0, 0, canvas.width, canvas.height);
+        }
+
+        // Liaison de la tête de lecture des frames avec la barre de défilement
+        gsap.to(house, {
+            frame: frameCount - 1,
+            snap: "frame", 
+            ease: "none",
+            scrollTrigger: {
+                trigger: ".content-wrapper",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 0.5 // Inertie fluide de 0.5 seconde
+            },
+            onUpdate: render 
+        });
+
+        // --- 2. APPARITION 3D HOLOGRAPHIQUE DES TEXTES ---
         const panels = gsap.utils.toArray('.glass-panel');
 
         panels.forEach((panel, index) => {
+            // Alterne l'inclinaison : gauche pour les pairs, droite pour les impairs
             let angleDepart = index % 2 === 0 ? 15 : -15;
 
             gsap.from(panel, {
@@ -218,7 +244,7 @@
                     end: "center center",
                     scrub: 1
                 },
-                z: -200, 
+                z: -300, // Arrive des profondeurs de l'écran
                 rotationY: angleDepart,
                 opacity: 0,
                 ease: "power1.out"
