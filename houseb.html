@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $json.nom_entreprise }} | {{ $json.metier }} à {{ $json.ville }}</title>
-    <meta name="description" content="{{ $json.texte_hero }}">
+    <title>Komodzinski et Santos Maçonnerie | Artisan Maçon à Uckange</title>
+    <meta name="description" content="Entreprise de maçonnerie générale et rénovation traditionnelle à Uckange. Découvrez nos réalisations et demandez votre devis gratuit.">
     
     <!-- Importation de GSAP pour les animations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -32,22 +32,18 @@
         }
 
         /* 1. TOILE DE FOND (SÉQUENCE D'IMAGES) */
-#hero-lightpass {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 0;
-    object-fit: cover; 
-    object-position: center bottom; /* Aligne le point de non-coupure en bas au centre */
-    opacity: 0.8;
-    pointer-events: none;
-}
-
-
-
-
+        #hero-lightpass {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            object-fit: cover;
+            object-position: 50% 85%; /* Ajustement du focus sur la maison */
+            opacity: 0.8;
+            pointer-events: none;
+        }
 
         /* 2. CONTENEUR DE CONTENU DÉFILANT */
         .content-wrapper {
@@ -61,7 +57,7 @@
             display: flex;
             align-items: center;
             padding: 100px 10vw;
-            perspective: 1200px; /* Profondeur 3D pour les panneaux */
+            perspective: 1200px;
         }
 
         .hero { justify-content: flex-start; }
@@ -142,25 +138,25 @@
     <main class="content-wrapper">
         <section class="hero">
             <div class="glass-panel">
-                <span class="kicker">{{ $json.metier }} à {{ $json.ville }}</span>
-                <h1>{{ $json.nom_entreprise }}</h1>
-                <p>{{ $json.texte_hero }}</p>
-                <a href="#contact" class="btn btn-primary">Demander un devis</a>
+                <span class="kicker">Maçonnerie Générale à Uckange</span>
+                <h1>Komodzinski et Santos</h1>
+                <p>Bâtisseurs de tradition et spécialistes de la rénovation durable. Nous concrétisons vos projets de construction et d'agrandissement avec l'exigence du travail bien fait.</p>
+                <a href="#contact" class="btn btn-primary">Demander un devis gratuit</a>
             </div>
         </section>
 
         <section class="services" id="services">
             <div class="glass-panel">
                 <span class="kicker">Nos expertises</span>
-                <h2>Un savoir-faire reconnu</h2>
+                <h2>Un savoir-faire artisanal</h2>
                 <div class="grid-list">
                     <div class="grid-item">
-                        <h3>{{ $json.service_1_titre }}</h3>
-                        <p>{{ $json.service_1_desc }}</p>
+                        <h3>Construction & Gros Œuvre</h3>
+                        <p>Élévation de murs en briques ou agglo, fondations robustes et structures sur mesure pour maisons individuelles et extensions.</p>
                     </div>
                     <div class="grid-item">
-                        <h3>{{ $json.service_2_titre }}</h3>
-                        <p>{{ $json.service_2_desc }}</p>
+                        <h3>Rénovation & Ouvertures</h3>
+                        <p>Ouverture de murs porteurs, pose de linteaux IPN, réfection de façades en pierre et rejointoiement traditionnel.</p>
                     </div>
                 </div>
             </div>
@@ -168,17 +164,17 @@
 
         <section class="about">
             <div class="glass-panel">
-                <span class="kicker">Notre histoire</span>
-                <h2>L'exigence artisanale</h2>
-                <p>{{ $json.texte_a_propos }}</p>
+                <span class="kicker">Notre engagement</span>
+                <h2>L'exigence du détail</h2>
+                <p>Implantée à Uckange, l'entreprise Komodzinski et Santos met son alliance de compétences au service des particuliers et professionnels de la région. De la première pierre jusqu'à la finition de vos aménagements extérieurs, nous garantissons un suivi rigoureux et le respect des règles de l'art.</p>
             </div>
         </section>
 
         <section class="contact" id="contact">
             <div class="glass-panel" style="margin: 0 auto;">
                 <h2>Prêt à bâtir votre projet ?</h2>
-                <p>Intervention rapide à {{ $json.ville }} et ses environs.</p>
-                <a href="tel:{{ $json.telephone }}" class="btn btn-primary" style="margin-bottom: 24px;">Appeler le {{ $json.telephone }}</a>
+                <p>Intervention rapide à Uckange, Thionville, Metz et leurs environs.</p>
+                <a href="tel:0387000000" class="btn btn-primary" style="margin-bottom: 24px;">Appeler le 03 87 00 00 00</a>
             </div>
         </section>
     </main>
@@ -190,20 +186,16 @@
         const canvas = document.getElementById("hero-lightpass");
         const context = canvas.getContext("2d");
 
-        // Résolution du canvas (Modifiez si vos images ont une taille différente)
         canvas.width = 1920;
         canvas.height = 1080;
 
-        // Nombre total d'images (de 005 à 300 = 296 images)
         const frameCount = 296; 
         
-        // Générateur d'URL pointant vers votre GitHub
         const currentFrame = index => {
             const numeroImage = index + 5; 
             return `https://kamzerr.github.io/testoooo/src/house/ezgif-frame-${numeroImage.toString().padStart(3, '0')}.jpg`;
         };
 
-        // Cache pour précharger les images en mémoire vive
         const images = [];
         const house = { frame: 0 };
 
@@ -213,7 +205,6 @@
             images.push(img);
         }
 
-        // Affichage de la toute première image au chargement
         images[0].onload = render;
 
         function render() {
@@ -221,7 +212,6 @@
             context.drawImage(images[house.frame], 0, 0, canvas.width, canvas.height);
         }
 
-        // Liaison de la tête de lecture des frames avec la barre de défilement
         gsap.to(house, {
             frame: frameCount - 1,
             snap: "frame", 
@@ -230,7 +220,7 @@
                 trigger: ".content-wrapper",
                 start: "top top",
                 end: "bottom bottom",
-                scrub: 0.5 // Inertie fluide de 0.5 seconde
+                scrub: 0.5
             },
             onUpdate: render 
         });
@@ -239,7 +229,6 @@
         const panels = gsap.utils.toArray('.glass-panel');
 
         panels.forEach((panel, index) => {
-            // Alterne l'inclinaison : gauche pour les pairs, droite pour les impairs
             let angleDepart = index % 2 === 0 ? 15 : -15;
 
             gsap.from(panel, {
@@ -249,7 +238,7 @@
                     end: "center center",
                     scrub: 1
                 },
-                z: -300, // Arrive des profondeurs de l'écran
+                z: -300,
                 rotationY: angleDepart,
                 opacity: 0,
                 ease: "power1.out"
