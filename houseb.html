@@ -32,17 +32,19 @@
         }
 
         /* 1. TOILE DE FOND (SÉQUENCE D'IMAGES) */
-#hero-lightpass {
+##hero-lightpass {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
     z-index: 0;
-    object-fit: contain; /* L'image rentre entièrement dans l'écran */
+    object-fit: cover; 
+    object-position: 70% 50%; /* Aligne le point de non-coupure en bas au centre */
     opacity: 0.8;
     pointer-events: none;
 }
+
 
 
 
