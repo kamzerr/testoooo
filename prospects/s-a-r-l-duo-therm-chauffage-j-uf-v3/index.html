@@ -1,358 +1,492 @@
 <!DOCTYPE html>
-<html lang="fr" class="scroll-smooth">
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>S.A.R.L Duo Therm Chauffage | Chauffagiste et installateur thermique à Jœuf</title>
-    <meta name="description" content="S.A.R.L Duo Therm Chauffage est votre partenaire de confiance pour tous vos travaux à Jœuf.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Polices : Lora pour l'élégance (titres), Outfit pour la modernité (texte) -->
-    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --brand-dark: #1B3C35; /* Vert sapin très profond */
-            --brand-light: #2A5A50;
-            --accent: #D96C4A; /* Terre cuite / Brique */
-            --accent-hover: #BF5A3B;
-            --bg-page: #F9F8F6; /* Blanc cassé / Sable */
-            --bg-card: #FFFFFF;
-            --text-main: #2C2C2C;
-            --text-muted: #6B6B6B;
-            --border-color: #E5E2DC;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Outfit', sans-serif;
-            background: var(--bg-page);
-            color: var(--text-main);
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-        }
-        h1, h2, h3 {
-            font-family: 'Lora', serif;
-            color: var(--brand-dark);
-            font-weight: 600;
-            line-height: 1.15;
-        }
-        img { display: block; max-width: 100%; height: auto; }
-        a { text-decoration: none; }
-        .wrap { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S.A.R.L Duo Therm Chauffage | Chauffagiste et installateur thermique à Jœuf — Immersion 3D</title>
+<meta name="description" content="S.A.R.L Duo Therm Chauffage est votre partenaire de confiance pour tous vos travaux de Chauffagiste et installateur thermique à Jœuf.">
 
-        /* ---- HEADER ---- */
-        header {
-            background: var(--bg-page);
-            border-bottom: 1px solid var(--border-color);
-            position: sticky; top: 0; z-index: 50;
-        }
-        header .wrap {
-            display: flex; justify-content: space-between; align-items: center;
-            height: 90px;
-        }
-        .brand {
-            display: flex; align-items: center; gap: 16px;
-            font-family: 'Lora', serif; font-weight: 700; font-size: 1.4rem;
-            color: var(--brand-dark);
-        }
-        .brand .icon-badge {
-            color: var(--accent);
-            display: flex; align-items: center; justify-content: center;
-        }
-        .header-cta {
-            background: var(--accent); color: #FFF;
-            padding: 12px 28px; font-weight: 500; font-size: 1rem;
-            border-radius: 4px; transition: background 0.2s;
-        }
-        .header-cta:hover { background: var(--accent-hover); }
+<!-- Fonts Google -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500;600&family=Zilla+Slab:wght@600;700&display=swap" rel="stylesheet">
 
-        /* ---- HERO (SPLIT LAYOUT) ---- */
-        .hero {
-            background: var(--brand-dark);
-            color: var(--bg-page);
-            padding: 64px 0;
-        }
-        .hero .wrap {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 64px;
-            align-items: center;
-        }
-        .hero-text-area { padding-right: 24px; }
-        .hero-badge {
-            display: inline-block;
-            color: var(--accent); font-weight: 600; font-size: 0.9rem;
-            text-transform: uppercase; letter-spacing: 0.1em;
-            margin-bottom: 24px;
-            border-bottom: 2px solid var(--accent);
-            padding-bottom: 4px;
-        }
-        .hero h1 {
-            font-size: clamp(2.2rem, 4vw, 3.5rem);
-            color: #FFFFFF;
-            margin-bottom: 24px;
-        }
-        .hero h1 span { color: var(--accent); font-style: italic; }
-        .hero p.lead {
-            font-size: 1.15rem; color: #D1D5D2;
-            margin-bottom: 40px; font-weight: 300;
-        }
-        .hero-ctas { display: flex; gap: 16px; }
-        .btn {
-            display: inline-flex; align-items: center; justify-content: center;
-            padding: 16px 32px; font-weight: 500; font-size: 1rem;
-            border-radius: 4px; cursor: pointer; transition: all 0.2s;
-        }
-        .btn-primary { background: var(--accent); color: #FFF; }
-        .btn-primary:hover { background: var(--accent-hover); }
-        .btn-outline { background: transparent; color: #FFF; border: 1px solid #FFF; }
-        .btn-outline:hover { background: #FFF; color: var(--brand-dark); }
-        
-        .hero-image-area { position: relative; }
-        .hero-image-area img {
-            border-radius: 8px;
-            box-shadow: 0 24px 48px rgba(0,0,0,0.2);
-            aspect-ratio: 4/5;
-            object-fit: cover;
-        }
+<!-- GSAP & ScrollTrigger -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
-        /* ---- SECTION SHELL ---- */
-        section { padding: 112px 0; }
-        .section-alt { background: var(--bg-card); }
-        .section-head { text-align: center; max-width: 700px; margin: 0 auto 64px; }
-        .section-head .kicker {
-            color: var(--accent); font-weight: 600; font-size: 0.9rem;
-            text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-bottom: 16px;
-        }
-        .section-head h2 { font-size: clamp(2rem, 3.5vw, 2.8rem); margin-bottom: 24px; }
-        .section-head p { color: var(--text-muted); font-size: 1.1rem; }
+<style>
+  :root {
+    --bg-dark: #0D1418;
+    --card-bg: rgba(19, 29, 35, 0.85);
+    --border-light: rgba(216, 210, 194, 0.15);
+    --primary-cyan: #0284C7;
+    --accent-orange: #E8622C;
+    --text-main: #F9F7F2;
+    --text-muted: #94A3B8;
+  }
 
-        /* ---- SERVICES ---- */
-        .services-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
-        }
-        .service-card {
-            background: var(--bg-card);
-            padding: 48px 32px;
-            border: 1px solid var(--border-color);
-            border-top: 4px solid var(--brand-dark);
-            border-radius: 4px;
-            transition: transform 0.3s ease;
-        }
-        .service-card:hover { transform: translateY(-5px); border-top-color: var(--accent); }
-        .service-icon {
-            color: var(--brand-dark);
-            margin-bottom: 24px;
-        }
-        .service-card h3 { font-size: 1.4rem; margin-bottom: 16px; }
-        .service-card p { color: var(--text-muted); }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
 
-        /* ---- ABOUT ---- */
-        .about-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
-        }
-        .about-img {
-            position: relative;
-        }
-        .about-img img {
-            border-radius: 4px;
-            position: relative; z-index: 2;
-        }
-        .about-img::before {
-            content: ""; position: absolute;
-            top: -20px; left: -20px; right: 20px; bottom: 20px;
-            background: var(--border-color); z-index: 1; border-radius: 4px;
-        }
-        .about-text h2 { font-size: clamp(2rem, 3.5vw, 2.8rem); margin-bottom: 32px; }
-        .about-text .body-copy { color: var(--text-muted); font-size: 1.1rem; }
-        .about-text .body-copy p + p { margin-top: 24px; }
+  .mono { font-family: 'Roboto Mono', monospace; }
+  .serif { font-family: 'Zilla Slab', serif; }
 
-        /* ---- REVIEWS ---- */
-        .reviews-grid {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px;
-        }
-        .review-card {
-            background: var(--bg-page);
-            padding: 48px;
-            border-radius: 4px;
-            border: 1px solid var(--border-color);
-        }
-        .review-stars { color: var(--accent); margin-bottom: 24px; font-size: 1.2rem; letter-spacing: 2px;}
-        .review-text {
-            font-family: 'Lora', serif; font-size: 1.2rem; font-style: italic;
-            color: var(--brand-dark); margin-bottom: 32px;
-        }
-        .review-author {
-            font-weight: 600; color: var(--text-main); font-size: 1rem;
-            display: flex; align-items: center; gap: 12px;
-        }
-        .review-author::before {
-            content: ""; width: 30px; height: 1px; background: var(--accent);
-        }
+  /* ÉCRAN DE CHARGEMENT */
+  #loader {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: var(--bg-dark);
+    z-index: 99999;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    transition: opacity 0.5s ease;
+    pointer-events: auto;
+  }
+  #loader.is-hidden {
+    opacity: 0;
+    pointer-events: none !important;
+    display: none !important;
+  }
+  .loader-brand {
+    font-family: 'Zilla Slab', serif;
+    font-size: 2rem; font-weight: 700;
+    margin-bottom: 24px; letter-spacing: -0.02em;
+    text-align: center;
+  }
+  .loader-brand span { color: var(--accent-orange); }
+  .progress-bar-bg {
+    width: 280px; height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px; overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .progress-bar-fill {
+    width: 0%; height: 100%;
+    background: linear-gradient(90deg, var(--primary-cyan), var(--accent-orange));
+    transition: width 0.1s ease;
+  }
+  .loader-status { font-size: 0.82rem; color: var(--text-muted); }
 
-        /* ---- FOOTER ---- */
-        footer {
-            background: var(--brand-dark); color: var(--bg-page);
-            padding: 80px 0 40px;
-        }
-        .foot-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 64px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 64px; margin-bottom: 32px;
-        }
-        footer h3 { color: #FFF; font-size: 2rem; margin-bottom: 24px; }
-        .foot-desc { color: #A4B3AF; font-size: 1.1rem; max-width: 400px; margin-bottom: 32px; }
-        .foot-contact-item { margin-bottom: 16px; display: flex; align-items: center; gap: 16px; }
-        .foot-contact-item span { color: var(--accent); font-weight: 600; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 0.05em; width: 100px; }
-        .foot-contact-item strong { color: #FFF; font-size: 1.1rem; font-weight: 400; }
-        
-        .foot-cta { background: var(--brand-light); padding: 48px; border-radius: 4px; text-align: center; }
-        .foot-cta p { color: #FFF; font-size: 1.2rem; margin-bottom: 24px; font-family: 'Lora', serif; }
-        
-        .foot-bottom { text-align: center; color: #7B908B; font-size: 0.9rem; }
+  /* HEADER */
+  header {
+    position: fixed; top: 0; left: 0; width: 100%;
+    z-index: 100;
+    padding: 16px 24px;
+    display: flex; justify-content: space-between; align-items: center;
+    background: linear-gradient(to bottom, rgba(13,20,24,0.95) 0%, rgba(13,20,24,0) 100%);
+    backdrop-filter: blur(6px);
+  }
+  .logo {
+    font-family: 'Zilla Slab', serif; font-weight: 700; font-size: 1.2rem;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .logo-mark {
+    width: 32px; height: 32px;
+    color: var(--accent-orange);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .header-cta {
+    background: var(--accent-orange); color: #fff;
+    padding: 10px 18px; font-weight: 600; font-size: 0.82rem;
+    text-decoration: none; border-radius: 2px; transition: background 0.2s;
+  }
 
-        /* ---- RESPONSIVE ---- */
-        @media(max-width: 992px) {
-            .hero .wrap, .about-grid, .reviews-grid, .foot-grid { grid-template-columns: 1fr; gap: 48px; }
-            .hero-text-area { padding-right: 0; text-align: center; }
-            .hero-ctas { justify-content: center; }
-            .services-grid { grid-template-columns: 1fr; }
-            .hero-image-area img { aspect-ratio: 16/9; }
-            section { padding: 80px 0; }
-        }
-        @media (prefers-reduced-motion: reduce) {
-            html { scroll-behavior: auto; }
-            * { transition: none !important; }
-        }
-    </style>
+  /* SECTION ANIMATION 3D SCROLL */
+  .animation-container {
+    position: relative;
+    height: 450vh;
+  }
+  .sticky-wrapper {
+    position: sticky; top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    overflow: hidden;
+  }
+  canvas#canvas-3d {
+    position: absolute; top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    display: block;
+  }
+
+  /* OVERLAYS TEXTES */
+  .text-overlay {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 20px;
+  }
+  .step-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    backdrop-filter: blur(12px);
+    padding: 28px 32px; max-width: 520px; width: 100%;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  .step-card.active {
+    opacity: 1; transform: translateY(0);
+    pointer-events: auto;
+  }
+  .step-tag {
+    font-size: 0.75rem; color: var(--primary-cyan);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 8px; display: block;
+  }
+  .step-card h2 {
+    font-family: 'Zilla Slab', serif; font-size: 1.75rem;
+    margin-bottom: 10px; line-height: 1.15;
+  }
+  .step-card p {
+    color: var(--text-muted); font-size: 0.92rem; line-height: 1.55;
+  }
+
+  /* SECTIONS SUIVANTES */
+  section { padding: 80px 24px; border-top: 1px solid var(--border-light); }
+  .section-content { position: relative; z-index: 10; background: var(--bg-dark); }
+  .content-wrap { max-width: 1100px; margin: 0 auto; }
+  
+  .grid-3 {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px; margin-top: 40px;
+  }
+  .feature-box {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border-light);
+    padding: 28px;
+    border-radius: 4px;
+  }
+  .feature-num { color: var(--accent-orange); font-size: 0.85rem; margin-bottom: 10px; }
+
+  /* ABOUT & REVIEWS */
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+  .about-img img { border-radius: 4px; border: 1px solid var(--border-light); }
+  
+  .reviews-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-top: 40px; }
+  .review-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border-light);
+    padding: 32px; border-radius: 4px;
+  }
+  .review-stars { color: var(--accent-orange); margin-bottom: 16px; }
+  .review-text { font-style: italic; color: var(--text-main); margin-bottom: 20px; font-size: 0.95rem; }
+  .review-author { font-weight: 600; color: var(--text-muted); font-size: 0.88rem; }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border-light);
+    padding: 48px 24px 32px;
+    background: var(--bg-dark);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+  .foot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 32px; max-width: 1100px; margin: 0 auto 32px; }
+  .foot-grid h3 { color: var(--text-main); margin-bottom: 12px; }
+  .foot-contact-item { margin-bottom: 8px; }
+  .foot-bottom { text-align: center; padding-top: 24px; border-top: 1px solid var(--border-light); }
+
+  @media (max-width: 768px) {
+    .about-grid { grid-template-columns: 1fr; }
+  }
+</style>
 </head>
 <body>
 
-    <!-- Header -->
-    <header>
-        <div class="wrap">
-            <div class="brand">
-                <span class="icon-badge"><svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg></span>
-                S.A.R.L Duo Therm Chauffage
-            </div>
-            <a href="#contact" class="header-cta">Demander un devis</a>
-        </div>
-    </header>
+<!-- ÉCRAN DE CHARGEMENT -->
+<div id="loader">
+  <div class="loader-brand">S.A.R.L Duo Therm Chauffage</div>
+  <div class="progress-bar-bg">
+    <div class="progress-bar-fill" id="progress-fill"></div>
+  </div>
+  <div class="loader-status mono" id="loader-text">Chargement des visuels... 0%</div>
+</div>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="wrap">
-            <div class="hero-text-area">
-                <span class="hero-badge">Chauffagiste et installateur thermique à Jœuf</span>
-                <h1>Votre partenaire <span>artisan</span> de confiance.</h1>
-                <p class="lead">Profitez d'un confort thermique optimal toute l'année à Jœuf grâce à nos solutions de chauffage performantes et éco-responsables.</p>
-                <div class="hero-ctas">
-                    <a href="#contact" class="btn btn-primary">Demander un devis</a>
-                    <a href="#services" class="btn btn-outline">Nos services</a>
-                </div>
-            </div>
-            <div class="hero-image-area">
-                <img src="https://kamzerr.github.io/testoooo/src/chauffagiste-hero.jpg" alt="S.A.R.L Duo Therm Chauffage - Chauffagiste et installateur thermique">
-            </div>
-        </div>
-    </section>
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-mark"><svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg></div>
+    S.A.R.L Duo Therm Chauffage
+  </div>
+  <a href="tel:07 71 16 69 90" class="header-cta">Appeler : 07 71 16 69 90</a>
+</header>
 
-    <!-- Services Section -->
-    <section id="services" class="section-alt">
-        <div class="wrap">
-            <div class="section-head">
-                <span class="kicker">Nos expertises</span>
-                <h2>Un savoir-faire reconnu</h2>
-                <p>Découvrez nos principales prestations, réalisées dans les règles de l'art.</p>
-            </div>
+<!-- CONTENEUR ANIMATION SCROLL -->
+<div class="animation-container" id="scroll-trigger-area">
+  <div class="sticky-wrapper">
+    <canvas id="canvas-3d"></canvas>
 
-            <div class="services-grid">
-                <div class="service-card">
-                    <div class="service-icon"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z"></path></svg></div>
-                    <h3>Installation de chaudières</h3>
-                    <p>Pose et mise en service de vos nouveaux équipements de chauffage haute performance pour réduire vos factures d'énergie.</p>
-                </div>
+    <div class="text-overlay">
+      <div class="step-card active" id="card-1">
+        <span class="step-tag mono">01 / Expertise</span>
+        <h2>Chauffagiste et installateur thermique à Jœuf</h2>
+        <p>Profitez d'un confort thermique optimal toute l'année à Jœuf grâce à nos solutions de chauffage performantes et éco-responsables.</p>
+      </div>
+    </div>
 
-                <div class="service-card">
-                    <div class="service-icon"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg></div>
-                    <h3>Entretien et dépannage rapide</h3>
-                    <p>Intervention d'urgence et maintenance préventive pour garantir la longévité et la sécurité de votre installation.</p>
-                </div>
+    <div class="text-overlay">
+      <div class="step-card" id="card-2">
+        <span class="step-tag mono">02 / Diagnostic</span>
+        <h2>Installation de chaudières</h2>
+        <p>Pose et raccordement de systèmes de chauffage dernière génération pour un rendement maximal et des économies d'énergie.</p>
+      </div>
+    </div>
 
-                <div class="service-card">
-                    <div class="service-icon"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg></div>
-                    <h3>Pompes à chaleur</h3>
-                    <p>Expertise en installation et réglage de pompes à chaleur pour un chauffage économique et respectueux de l'environnement.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+    <div class="text-overlay">
+      <div class="step-card" id="card-3">
+        <span class="step-tag mono">03 / Savoir-Faire</span>
+        <h2>Entretien et dépannage rapide</h2>
+        <p>Intervention d'urgence et maintenance préventive pour garantir la longévité de vos équipements et votre sécurité.</p>
+      </div>
+    </div>
 
-    <!-- About Section -->
-    <section>
-        <div class="wrap about-grid">
-            <div class="about-img">
-                <img src="https://kamzerr.github.io/testoooo/src/chauffagiste-about.jpg" alt="À propos de S.A.R.L Duo Therm Chauffage">
-            </div>
-            <div class="about-text">
-                <span class="kicker" style="color: var(--accent); font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-bottom: 16px;">Notre histoire</span>
-                <h2>S.A.R.L Duo Therm Chauffage</h2>
-                <div class="body-copy">
-                    <p>Implantée au cœur de <strong>Jœuf</strong>, la <strong>S.A.R.L Duo Therm Chauffage</strong> met son savoir-faire et son expertise technique au service de votre confort quotidien. Spécialisés dans l'installation, l'entretien et le dépannage de tous types de systèmes de chauffage, nous intervenons rapidement pour garantir la chaleur et la sécurité de votre foyer.</p><p>Parce que chaque habitation est unique, nous vous offrons des <strong>conseils personnalisés</strong> et un travail soigné, réalisé dans le respect des normes en vigueur. Faites confiance à notre réactivité et à notre professionnalisme pour tous vos projets thermiques dans la région.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+    <div class="text-overlay">
+      <div class="step-card" id="card-4">
+        <span class="step-tag mono">04 / Engagement</span>
+        <h2>Pompes à chaleur</h2>
+        <p>Étude et installation de pompes à chaleur économiques pour chauffer votre habitat de manière durable.</p>
+      </div>
+    </div>
 
-    <!-- Reviews Section -->
-    <section class="section-alt">
-        <div class="wrap">
-            <div class="section-head">
-                <span class="kicker">Témoignages</span>
-                <h2>Ils nous font confiance</h2>
-            </div>
+  </div>
+</div>
 
-            <div class="reviews-grid">
-                <div class="review-card">
-                    <div class="review-stars">★★★★★</div>
-                    <p class="review-text">"Intervention rapide pour une panne de chaudière en plein hiver. Technicien très professionnel, efficace et de bon conseil. Je recommande vivement !"</p>
-                    <div class="review-author">Marc L.</div>
-                </div>
+<!-- SERVICES DETAILLES -->
+<section class="section-content" id="services">
+  <div class="content-wrap">
+    <span class="mono" style="color:var(--accent-orange); text-transform:uppercase;">Nos prestations</span>
+    <h2 class="serif" style="font-size:2.2rem; margin-top:8px;">Un niveau d'exigence sans concession</h2>
 
-                <div class="review-card">
-                    <div class="review-stars">★★★★★</div>
-                    <p class="review-text">"Remplacement complet de notre ancien système par une pompe à chaleur. Chantier propre, respect des délais et facture conforme au devis. Au top !"</p>
-                    <div class="review-author">Sophie D.</div>
-                </div>
-            </div>
-        </div>
-    </section>
+    <div class="grid-3">
+      <div class="feature-box">
+        <div class="feature-num mono"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z"></path></svg></div>
+        <h3 class="serif" style="margin-bottom:8px; font-size:1.25rem;">Installation de chaudières</h3>
+        <p style="color:var(--text-muted); font-size:0.88rem;">Pose et raccordement de systèmes de chauffage dernière génération pour un rendement maximal et des économies d'énergie.</p>
+      </div>
+      <div class="feature-box">
+        <div class="feature-num mono"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg></div>
+        <h3 class="serif" style="margin-bottom:8px; font-size:1.25rem;">Entretien et dépannage rapide</h3>
+        <p style="color:var(--text-muted); font-size:0.88rem;">Intervention d'urgence et maintenance préventive pour garantir la longévité de vos équipements et votre sécurité.</p>
+      </div>
+      <div class="feature-box">
+        <div class="feature-num mono"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg></div>
+        <h3 class="serif" style="margin-bottom:8px; font-size:1.25rem;">Pompes à chaleur</h3>
+        <p style="color:var(--text-muted); font-size:0.88rem;">Étude et installation de pompes à chaleur économiques pour chauffer votre habitat de manière durable.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <!-- Footer / Contact -->
-    <footer id="contact">
-        <div class="wrap">
-            <div class="foot-grid">
-                <div>
-                    <h3>S.A.R.L Duo Therm Chauffage</h3>
-                    <p class="foot-desc">L'exigence et la qualité de votre artisan Chauffagiste et installateur thermique à Jœuf. Interventions rapides et devis transparents.</p>
-                    <div class="foot-contact-item">
-                        <span>Téléphone</span>
-                        <strong>07 71 16 69 90</strong>
-                    </div>
-                    <div class="foot-contact-item">
-                        <span>Localité</span>
-                        <strong>Jœuf et alentours</strong>
-                    </div>
-                </div>
-                <div class="foot-cta">
-                    <p>Besoin d'un devis ou d'une intervention rapide ?</p>
-                    <a href="tel:07 71 16 69 90" class="btn btn-primary" style="width: 100%;">Contactez-nous par téléphone</a>
-                </div>
-            </div>
-            <div class="foot-bottom">
-                © S.A.R.L Duo Therm Chauffage — Tous droits réservés.
-            </div>
-        </div>
-    </footer>
+<!-- A PROPOS -->
+<section class="section-content">
+  <div class="content-wrap about-grid">
+    <div class="about-img">
+      <img src="https://consulting-coredynamics.github.io/assets/public/staticpictures/chauffagiste-about.jpg" alt="À propos de S.A.R.L Duo Therm Chauffage">
+    </div>
+    <div>
+      <span class="mono" style="color:var(--accent-orange); text-transform:uppercase;">Notre Histoire</span>
+      <h2 class="serif" style="font-size:2.2rem; margin-top:8px; margin-bottom:16px;">S.A.R.L Duo Therm Chauffage</h2>
+      <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.6;"><p>Implantée au cœur de <strong>Jœuf</strong>, la <strong>S.A.R.L Duo Therm Chauffage</strong> met son savoir-faire et son expertise technique au service de votre confort au quotidien. Spécialisés dans l'installation, l'entretien et le dépannage de systèmes de chauffage, nous intervenons rapidement pour vous garantir des équipements fiables et performants, adaptés à vos besoins et à votre budget.</p><p>Fier d'un service de proximité réactif et rigoureux, notre artisan qualifié vous accompagne à chaque étape de vos projets thermiques. Qu'il s'agisse de réduire votre facture énergétique ou de faire face à une panne urgente, nous privilégions toujours la qualité du travail bien fait et la satisfaction durable de nos clients.</p></p>
+    </div>
+  </div>
+</section>
 
+<!-- TEMOIGNAGES -->
+<section class="section-content">
+  <div class="content-wrap">
+    <span class="mono" style="color:var(--accent-orange); text-transform:uppercase;">Témoignages</span>
+    <h2 class="serif" style="font-size:2.2rem; margin-top:8px;">Ils nous font confiance</h2>
+
+    <div class="reviews-grid">
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">"Intervention rapide suite à une panne de chaudière en plein hiver. Un professionnalisme exemplaire et un travail soigné, je recommande vivement !"</p>
+        <div class="review-author">— Marc D.</div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">"Très bon conseil pour le remplacement de notre ancien système de chauffage par une pompe à chaleur. Économies constatées dès le premier mois !"</p>
+        <div class="review-author">— Sophie L.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer id="contact">
+  <div class="foot-grid">
+    <div>
+      <h3 class="serif">S.A.R.L Duo Therm Chauffage</h3>
+      <p style="margin-bottom:16px;">Votre artisan Chauffagiste et installateur thermique de confiance à Jœuf et ses alentours.</p>
+    </div>
+    <div>
+      <h3 class="serif">Contact</h3>
+      <div class="foot-contact-item">Téléphone : <strong>07 71 16 69 90</strong></div>
+      <div class="foot-contact-item">Zone d'intervention : <strong>Jœuf</strong></div>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    &copy; S.A.R.L Duo Therm Chauffage — Tous droits réservés.
+  </div>
+</footer>
+
+<!-- SCRIPT MOTEUR GSAP & CANVAS -->
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    const frameCount = 240;
+    
+    // Détection stricte Mobile vs Desktop
+    const checkIsMobile = () => {
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+    };
+
+    const isMobile = checkIsMobile();
+    
+    // Injections dynamiques n8n pour les dossiers d'images CDN
+    const baseUrl = isMobile 
+      ? "https://consulting-coredynamics.github.io/assets/public/heater/mobile/" 
+      : "https://consulting-coredynamics.github.io/assets/public/heater/desktop/";
+
+    const currentFrame = index => `${baseUrl}ezgif-frame-${(index + 1).toString().padStart(3, '0')}.jpg`;
+
+    const canvas = document.getElementById("canvas-3d");
+    const context = canvas.getContext("2d");
+    
+    const sequence = { frame: 0 };
+    const images = [];
+    let loadedImagesCount = 0;
+    let isFinished = false;
+
+    // Gestion de la résolution HD Retina (DPR)
+    function resizeCanvas() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      
+      canvas.style.width = `${window.innerWidth}px`;
+      canvas.style.height = `${window.innerHeight}px`;
+      
+      render();
+    }
+    
+    let currentMobileState = isMobile;
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+      if (checkIsMobile() !== currentMobileState) {
+        location.reload();
+      }
+    });
+
+    // Dessin du Canvas sans étirement ni déformation
+    function render() {
+      const img = images[sequence.frame];
+      if (!img || !img.complete || img.naturalWidth === 0) return;
+
+      context.clearRect(0, 0, canvas.width, canvas.height);
+
+      context.imageSmoothingEnabled = true;
+      context.imageSmoothingQuality = "high";
+
+      const imgRatio = img.naturalWidth / img.naturalHeight;
+      const canvasRatio = canvas.width / canvas.height;
+
+      let renderWidth, renderHeight;
+
+      if (canvasRatio > imgRatio) {
+        renderWidth = canvas.width;
+        renderHeight = canvas.width / imgRatio;
+      } else {
+        renderHeight = canvas.height;
+        renderWidth = canvas.height * imgRatio;
+      }
+
+      const x = (canvas.width - renderWidth) / 2;
+      const y = (canvas.height - renderHeight) / 2;
+
+      context.drawImage(img, x, y, renderWidth, renderHeight);
+    }
+
+    function handleImageLoad() {
+      if (isFinished) return;
+      loadedImagesCount++;
+      const percent = Math.min(100, Math.round((loadedImagesCount / frameCount) * 100));
+      
+      document.getElementById('progress-fill').style.width = `${percent}%`;
+      document.getElementById('loader-text').innerText = `Chargement 3D ${isMobile ? 'Mobile' : 'Desktop'}... ${percent}%`;
+
+      if (loadedImagesCount >= frameCount) {
+        isFinished = true;
+        dismissLoader();
+      }
+    }
+
+    function dismissLoader() {
+      const loader = document.getElementById('loader');
+      loader.classList.add('is-hidden');
+      initScrollAnimation();
+    }
+
+    // Chargement de la séquence d'images
+    for (let i = 0; i < frameCount; i++) {
+      const img = new Image();
+      img.onload = handleImageLoad;
+      img.onerror = handleImageLoad;
+      img.src = currentFrame(i);
+      images.push(img);
+    }
+
+    // Timeout de sécurité (8 secondes max)
+    setTimeout(() => {
+      if (!isFinished) {
+        isFinished = true;
+        dismissLoader();
+      }
+    }, 8000);
+
+    function initScrollAnimation() {
+      resizeCanvas();
+
+      gsap.to(sequence, {
+        frame: frameCount - 1,
+        snap: "frame",
+        ease: "none",
+        scrollTrigger: {
+          trigger: "#scroll-trigger-area",
+          start: "top top",
+          end: "bottom bottom",
+          scrub: 0.3,
+          onUpdate: () => {
+            render();
+            updateTextCards(Math.round(sequence.frame));
+          }
+        }
+      });
+      
+      ScrollTrigger.refresh();
+    }
+
+    function updateTextCards(frame) {
+      const c1 = document.getElementById('card-1');
+      const c2 = document.getElementById('card-2');
+      const c3 = document.getElementById('card-3');
+      const c4 = document.getElementById('card-4');
+
+      if(c1) c1.classList.toggle('active', frame >= 0 && frame < 60);
+      if(c2) c2.classList.toggle('active', frame >= 60 && frame < 120);
+      if(c3) c3.classList.toggle('active', frame >= 120 && frame < 180);
+      if(c4) c4.classList.toggle('active', frame >= 180);
+    }
+  });
+</script>
 </body>
 </html>
